@@ -3,12 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { KpiCard } from "../components/kpi-card"
 import { RiskBadge } from "../components/risk-badge"
 import { portfolioMetrics, accounts, recommendations } from "../data/mock-data"
-import type { PageId } from "../data/types"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { Bar, BarChart, XAxis, YAxis } from "recharts"
 
 interface DashboardPageProps {
-  onNavigate: (page: PageId) => void
+  onNavigate: (path: string) => void
   onViewAccount: (accountId: string) => void
 }
 
@@ -104,7 +103,7 @@ export function DashboardPage({ onNavigate, onViewAccount }: DashboardPageProps)
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-base">Upcoming Due — High Risk</CardTitle>
             <button
-              onClick={() => onNavigate("portfolio")}
+              onClick={() => onNavigate("/portfolio")}
               className="text-xs text-muted-foreground hover:text-foreground"
             >
               View all →

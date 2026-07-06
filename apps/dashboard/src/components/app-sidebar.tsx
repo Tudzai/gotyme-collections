@@ -1,9 +1,5 @@
-import {
-  LayoutDashboard,
-  Wallet,
-  ClipboardCheck,
-  TrendingUp,
-} from "lucide-react"
+import { LayoutDashboard, Wallet, ClipboardCheck, TrendingUp } from 'lucide-react'
+import { Link } from '@tanstack/react-router'
 import {
   Sidebar,
   SidebarContent,
@@ -15,23 +11,17 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import type { PageId } from "../data/types"
+} from '@/components/ui/sidebar'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 
-const navItems: { id: PageId; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
-  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { id: "portfolio", label: "Portfolio", icon: Wallet },
-  { id: "approvals", label: "Approvals", icon: ClipboardCheck },
-  { id: "outcomes", label: "Outcomes", icon: TrendingUp },
-]
+const navItems = [
+  { to: '/', label: 'Dashboard', icon: LayoutDashboard },
+  { to: '/portfolio', label: 'Portfolio', icon: Wallet },
+  { to: '/approvals', label: 'Approvals', icon: ClipboardCheck },
+  { to: '/outcomes', label: 'Outcomes', icon: TrendingUp },
+] as const
 
-interface AppSidebarProps {
-  currentPage: PageId
-  onNavigate: (page: PageId) => void
-}
-
-export function AppSidebar({ currentPage, onNavigate }: AppSidebarProps) {
+export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarHeader className="p-4">
@@ -51,11 +41,8 @@ export function AppSidebar({ currentPage, onNavigate }: AppSidebarProps) {
           <SidebarGroupContent>
             <SidebarMenu>
               {navItems.map((item) => (
-                <SidebarMenuItem key={item.id}>
-                  <SidebarMenuButton
-                    isActive={currentPage === item.id}
-                    onClick={() => onNavigate(item.id)}
-                  >
+                <SidebarMenuItem key={item.to}>
+                  <SidebarMenuButton render={<Link to={item.to} />}>
                     <item.icon className="h-4 w-4" />
                     <span>{item.label}</span>
                   </SidebarMenuButton>
