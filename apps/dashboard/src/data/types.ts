@@ -100,11 +100,14 @@ export interface KpiData {
 }
 
 export interface FilterState {
-  duration: "today" | "7d" | "14d" | "30d" | "mtd" | "qtd"
+  duration: "today" | "7d" | "14d" | "30d" | "mtd" | "qtd" | "custom"
   product: "all" | "Personal Loan" | "Credit Card" | "Mortgage"
   riskLevel: "all" | "critical" | "high" | "medium" | "low"
   dueWindow: "all" | "0-3" | "4-7" | "8-14" | "15+"
   channel: "all" | Channel
+  startDate?: string
+  endDate?: string
+  owner?: string
 }
 
 export interface ActionItem {

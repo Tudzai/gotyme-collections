@@ -22,6 +22,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { CheckCircle2, XCircle, AlertCircle, Clock, Plus, ShieldCheck } from "lucide-react"
 import { DataTable } from "../components/data-table"
 import type { ColumnDef } from "../components/data-table"
@@ -31,24 +32,22 @@ import {
   ruleChanges as initialRuleChanges,
 } from "../data/mock-data"
 import type { TreatmentRule, AutoApprovalRule, RuleChange, RuleStatus } from "../data/types"
-
-// ---------------------------------------------------------------------------
-// Simulated current role — swap to "analyst" | "manager" | "director" | "admin"
-// ---------------------------------------------------------------------------
-const CURRENT_ROLE: "analyst" | "manager" | "director" | "admin" = "director"
+import { useRole } from "../context/role-context"
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
-function roleCan(action: "propose" | "approve" | "publish" | "manage_roles" | "edit_drafts") {
-  const caps: Record<string, string[]> = {
-    analyst: [],
-    manager: ["propose", "edit_drafts"],
-    director: ["propose", "edit_drafts", "approve", "publish"],
-    admin: ["propose", "edit_drafts", "approve", "publish", "manage_roles"],
+function makeRoleCan(role: string) {
+  return function roleCan(action: "propose" | "approve" | "publish" | "manage_roles" | "edit_drafts") {
+    const caps: Record<string, string[]> = {
+      analyst: [],
+      manager: ["propose", "edit_drafts"],
+      director: ["propose", "edit_drafts", "approve", "publish"],
+      admin: ["propose", "edit_drafts", "approve", "publish", "manage_roles"],
+    }
+    return caps[role]?.includes(action) ?? false
   }
-  return caps[CURRENT_ROLE]?.includes(action) ?? false
 }
 
 function ruleStatusBadge(status: RuleStatus) {
@@ -104,7 +103,9 @@ const INITIAL_DRIVER_WEIGHTS: DriverWeight[] = [
 // Tab 1: Risk Matrix
 // ---------------------------------------------------------------------------
 
-function RiskMatrixTab() {
+type RoleCanFn = (action: "propose" | "approve" | "publish" | "manage_roles" | "edit_drafts") => boolean
+
+function RiskMatrixTab({ roleCan }: { roleCan: RoleCanFn }) {
   const canEdit = roleCan("propose")
 
   const [critical, setCritical] = useState(76)
@@ -294,7 +295,7 @@ const TREATMENT_RULE_COLUMNS: ColumnDef<Record<string, unknown>>[] = [
   },
 ]
 
-function TreatmentRulesTab() {
+function TreatmentRulesTab({ roleCan }: { roleCan: RoleCanFn }) {
   const [rules, setRules] = useState<TreatmentRule[]>(treatmentRules)
 
   const tableData = rules.map((r) => ({ ...r } as unknown as Record<string, unknown>))
@@ -328,14 +329,16 @@ function TreatmentRulesTab() {
           </Button>
         )}
       </div>
-      <DataTable
-        columns={columns}
-        data={tableData}
-        searchable
-        searchPlaceholder="Search rules..."
-        pageSize={10}
-        exportFilename="treatment-rules"
-      />
+      <div className="overflow-x-auto">
+        <DataTable
+          columns={columns}
+          data={tableData}
+          searchable
+          searchPlaceholder="Search rules..."
+          pageSize={10}
+          exportFilename="treatment-rules"
+        />
+      </div>
     </div>
   )
 }
@@ -355,7 +358,7 @@ const EXCLUSION_OPTIONS = [
   "Custom Message",
 ]
 
-function AutoApprovalTab() {
+function AutoApprovalTab({ roleCan }: { roleCan: RoleCanFn }) {
   const [rule, setRule] = useState<AutoApprovalRule>(initialAutoApprovalRule)
   const canEdit = roleCan("propose")
 
@@ -560,9 +563,9 @@ const PERMISSIONS: Permission[] = [
   "Manage Roles",
 ]
 
-function GovernanceTab() {
+function GovernanceTab({ roleCan, currentRole }: { roleCan: RoleCanFn; currentRole: string }) {
   const [makerCheckerEnabled, setMakerCheckerEnabled] = useState(true)
-  const isAdmin = CURRENT_ROLE === "admin"
+  const isAdmin = currentRole === "admin"
 
   return (
     <div className="space-y-6">
@@ -692,7 +695,7 @@ function GovernanceTab() {
 // Tab 5: Rule Change Log
 // ---------------------------------------------------------------------------
 
-function ChangeLogTab() {
+function ChangeLogTab({ roleCan }: { roleCan: RoleCanFn }) {
   const [changes, setChanges] = useState<RuleChange[]>(initialRuleChanges)
   const canApprove = roleCan("approve")
 
@@ -773,9 +776,18 @@ function ChangeLogTab() {
     {
       key: "rationale",
       header: "Rationale",
-      className: "max-w-56",
+      className: "max-w-[200px]",
       render: (row) => (
-        <span className="text-xs text-muted-foreground line-clamp-2">{row.rationale as string}</span>
+        <Tooltip>
+          <TooltipTrigger
+            render={<span className="text-xs text-muted-foreground truncate block max-w-[200px] cursor-default" />}
+          >
+            {row.rationale as string}
+          </TooltipTrigger>
+          <TooltipContent className="max-w-xs text-xs">
+            {row.rationale as string}
+          </TooltipContent>
+        </Tooltip>
       ),
     },
     {
@@ -861,15 +873,17 @@ function ChangeLogTab() {
         </div>
       )}
 
-      <DataTable
-        columns={changeColumns}
-        data={tableData}
-        searchable
-        searchPlaceholder="Search change log..."
-        pageSize={10}
-        stickyHeader
-        exportFilename="rule-change-log"
-      />
+      <div className="overflow-x-auto">
+        <DataTable
+          columns={changeColumns}
+          data={tableData}
+          searchable
+          searchPlaceholder="Search change log..."
+          pageSize={10}
+          stickyHeader
+          exportFilename="rule-change-log"
+        />
+      </div>
     </div>
   )
 }
@@ -890,13 +904,15 @@ type TabValue = (typeof TABS)[number]["value"]
 
 export function SettingsPage() {
   const [activeTab, setActiveTab] = useState<TabValue>("risk-matrix")
+  const { currentUser } = useRole()
+  const roleCan = makeRoleCan(currentUser.role)
 
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-3">
         <h1 className="text-lg font-semibold">Settings</h1>
         <Badge variant="outline" className="capitalize">
-          {CURRENT_ROLE}
+          {currentUser.role}
         </Badge>
       </div>
 
@@ -920,21 +936,21 @@ export function SettingsPage() {
         </TabsList>
 
         {/* Tab Content */}
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 overflow-hidden">
           <TabsContent value="risk-matrix" className="mt-0">
-            <RiskMatrixTab />
+            <RiskMatrixTab roleCan={roleCan} />
           </TabsContent>
           <TabsContent value="treatment-rules" className="mt-0">
-            <TreatmentRulesTab />
+            <TreatmentRulesTab roleCan={roleCan} />
           </TabsContent>
           <TabsContent value="auto-approval" className="mt-0">
-            <AutoApprovalTab />
+            <AutoApprovalTab roleCan={roleCan} />
           </TabsContent>
           <TabsContent value="governance" className="mt-0">
-            <GovernanceTab />
+            <GovernanceTab roleCan={roleCan} currentRole={currentUser.role} />
           </TabsContent>
           <TabsContent value="change-log" className="mt-0">
-            <ChangeLogTab />
+            <ChangeLogTab roleCan={roleCan} />
           </TabsContent>
         </div>
       </Tabs>

@@ -559,11 +559,11 @@ export function ApprovalsPage() {
             Escalate
           </Button>
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button size="sm" variant="outline" className="h-7 text-xs">
-                <UserPlus className="h-3.5 w-3.5 mr-1" />
-                Assign Owner
-              </Button>
+            <DropdownMenuTrigger
+              render={<Button size="sm" variant="outline" className="h-7 text-xs" />}
+            >
+              <UserPlus className="h-3.5 w-3.5 mr-1" />
+              Assign Owner
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
               {OWNERS.map((owner) => (
@@ -615,21 +615,23 @@ export function ApprovalsPage() {
       </div>
 
       {/* Data Table */}
-      <div className="min-h-0">
-        <DataTable
-          columns={columns}
-          data={tabRows as unknown as Record<string, unknown>[]}
-          searchable
-          searchPlaceholder="Search by customer, account, product…"
-          pageSize={15}
-          checkboxSelection
-          onSelectionChange={(rows) => setSelectedRows(rows as unknown as Recommendation[])}
-          stickyHeader
-          exportFilename="approvals-queue"
-          rowExpansion={(row) => (
-            <ExpansionPanel rec={row as unknown as Recommendation} />
-          )}
-        />
+      <div className="min-h-0 overflow-x-auto">
+        <div className="min-w-[900px]">
+          <DataTable
+            columns={columns}
+            data={tabRows as unknown as Record<string, unknown>[]}
+            searchable
+            searchPlaceholder="Search by customer, account, product…"
+            pageSize={15}
+            checkboxSelection
+            onSelectionChange={(rows) => setSelectedRows(rows as unknown as Recommendation[])}
+            stickyHeader
+            exportFilename="approvals-queue"
+            rowExpansion={(row) => (
+              <ExpansionPanel rec={row as unknown as Recommendation} />
+            )}
+          />
+        </div>
       </div>
     </div>
   )

@@ -1,8 +1,8 @@
+import React from 'react'
 import {
   Clock,
   AlertCircle,
   ThumbsUp,
-  CheckCircle2,
   Zap,
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -29,7 +29,7 @@ import {
 } from "recharts"
 import { KpiCard } from "../../components/kpi-card"
 import { RiskBadge } from "../../components/risk-badge"
-import type { KpiData, ActionItem, ApprovalStatus, Channel } from "../data/types"
+import type { KpiData, ActionItem, ApprovalStatus, Channel } from "../../data/types"
 
 // ─── Local mock data ────────────────────────────────────────────────────────
 
@@ -344,7 +344,7 @@ const slaChartConfig = {
 
 interface ActionTabProps {
   onKpiClick:   (filter: { label: string; value: string }) => void
-  onChartClick: (filter: { label: string; value: string }) => void
+  onChartClick: (filter: { label: string; value: string }, event?: React.MouseEvent) => void
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -358,27 +358,22 @@ export function ActionTab({ onKpiClick, onChartClick }: ActionTabProps) {
   return (
     <div className="space-y-6">
 
-      {/* ── KPI Cards ──────────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+      {/* ── KPI Cards — 4 cards ────────────────────────────────────────────── */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
-          { title: "Pending Approvals",             icon: Clock,         favorable: "down" as const, filter: { label: "approvalStatus", value: "pending"   } },
-          { title: "Critical Actions Due Today",    icon: AlertCircle,   favorable: "down" as const, filter: { label: "priority",       value: "critical"  } },
-          { title: "Recommendation Acceptance Rate",icon: ThumbsUp,      favorable: "up"   as const, filter: { label: "metric",         value: "acceptance"} },
-          { title: "Actions Completed Today",       icon: CheckCircle2,  favorable: "up"   as const, filter: { label: "actionStatus",   value: "completed" } },
-          { title: "Auto-Approval Eligible",        icon: Zap,           favorable: "up"   as const, filter: { label: "autoApproval",   value: "eligible"  } },
+          { title: "Pending Approvals",             icon: Clock,         favorable: "down" as const, filter: { label: "Approval Status", value: "Pending"   } },
+          { title: "Critical Actions Due Today",    icon: AlertCircle,   favorable: "down" as const, filter: { label: "Priority",        value: "Critical"  } },
+          { title: "Acceptance Rate",               icon: ThumbsUp,      favorable: "up"   as const, filter: { label: "Metric",          value: "Acceptance"} },
+          { title: "Auto-Approval Eligible",        icon: Zap,           favorable: "up"   as const, filter: { label: "Auto-Approval",   value: "Eligible"  } },
         ].map((cfg, i) => (
-          <div
+          <KpiCard
             key={cfg.title}
-            className="cursor-pointer"
+            title={cfg.title}
+            kpi={kpis[i]}
+            icon={cfg.icon}
+            favorable={cfg.favorable}
             onClick={() => onKpiClick(cfg.filter)}
-          >
-            <KpiCard
-              title={cfg.title}
-              kpi={kpis[i]}
-              icon={cfg.icon}
-              favorable={cfg.favorable}
-            />
-          </div>
+          />
         ))}
       </div>
 

@@ -1,9 +1,9 @@
+import React from "react"
 import {
   Activity,
   AlertTriangle,
   ShieldAlert,
   Banknote,
-  Clock,
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
@@ -27,7 +27,7 @@ import type { KpiData } from "../../data/types"
 
 export interface OverviewTabProps {
   onKpiClick: (filter: { label: string; value: string }) => void
-  onChartClick: (filter: { label: string; value: string }) => void
+  onChartClick: (filter: { label: string; value: string }, event?: React.MouseEvent) => void
 }
 
 // ---------------------------------------------------------------------------
@@ -101,14 +101,6 @@ const predictedMissedKpi: KpiData = {
   yoy: 14.2,
   status: "warning",
   spark: kpiSparkData.predictedMissedPayment,
-}
-
-const avgDaysKpi: KpiData = {
-  value: "9.2d",
-  mom: 4.5,
-  yoy: 18.7,
-  status: "positive",
-  spark: kpiSparkData.avgDaysEarlyWarning,
 }
 
 // ---------------------------------------------------------------------------
@@ -274,68 +266,37 @@ export function OverviewTab({ onKpiClick, onChartClick }: OverviewTabProps) {
   return (
     <div className="space-y-6">
       {/* ------------------------------------------------------------------ */}
-      {/* KPI Cards Row                                                        */}
+      {/* KPI Cards Row — 4 cards                                             */}
       {/* ------------------------------------------------------------------ */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-        <div
-          className="cursor-pointer"
-          onClick={() => onKpiClick({ label: "Risk Level", value: "all" })}
-        >
-          <KpiCard
-            title="Total Accounts Monitored"
-            kpi={totalAccountsKpi}
-            icon={Activity}
-            favorable="up"
-          />
-        </div>
-
-        <div
-          className="cursor-pointer"
-          onClick={() => onKpiClick({ label: "Risk Level", value: "at-risk" })}
-        >
-          <KpiCard
-            title="At-Risk Accounts"
-            kpi={atRiskKpi}
-            icon={AlertTriangle}
-            favorable="down"
-          />
-        </div>
-
-        <div
-          className="cursor-pointer"
-          onClick={() => onKpiClick({ label: "Risk Level", value: "critical" })}
-        >
-          <KpiCard
-            title="Critical Risk Accounts"
-            kpi={criticalKpi}
-            icon={ShieldAlert}
-            favorable="down"
-          />
-        </div>
-
-        <div
-          className="cursor-pointer"
-          onClick={() => onKpiClick({ label: "Metric", value: "predicted_missed_payment" })}
-        >
-          <KpiCard
-            title="Predicted Missed Payment Amount"
-            kpi={predictedMissedKpi}
-            icon={Banknote}
-            favorable="down"
-          />
-        </div>
-
-        <div
-          className="cursor-pointer"
-          onClick={() => onKpiClick({ label: "Metric", value: "avg_days_early_warning" })}
-        >
-          <KpiCard
-            title="Avg Days Early Warning"
-            kpi={avgDaysKpi}
-            icon={Clock}
-            favorable="up"
-          />
-        </div>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <KpiCard
+          title="Total Accounts Monitored"
+          kpi={totalAccountsKpi}
+          icon={Activity}
+          favorable="up"
+          onClick={onKpiClick}
+        />
+        <KpiCard
+          title="At-Risk Accounts"
+          kpi={atRiskKpi}
+          icon={AlertTriangle}
+          favorable="down"
+          onClick={onKpiClick}
+        />
+        <KpiCard
+          title="Critical Risk Accounts"
+          kpi={criticalKpi}
+          icon={ShieldAlert}
+          favorable="down"
+          onClick={onKpiClick}
+        />
+        <KpiCard
+          title="Predicted Missed Payment"
+          kpi={predictedMissedKpi}
+          icon={Banknote}
+          favorable="down"
+          onClick={onKpiClick}
+        />
       </div>
 
       {/* ------------------------------------------------------------------ */}

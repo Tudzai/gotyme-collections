@@ -7,6 +7,9 @@ const defaultFilters: FilterState = {
   riskLevel: 'all',
   dueWindow: 'all',
   channel: 'all',
+  startDate: undefined,
+  endDate: undefined,
+  owner: 'all',
 }
 
 interface FilterContextValue {
@@ -35,3 +38,6 @@ export function useFilters() {
   if (!ctx) throw new Error('useFilters must be used within FilterProvider')
   return ctx
 }
+
+// Re-export Channel for convenience
+export type { Channel }

@@ -1,7 +1,6 @@
 import {
   HeartPulse,
   TrendingUp,
-  MessageSquare,
   DollarSign,
   Banknote,
 } from "lucide-react"
@@ -31,7 +30,7 @@ import type { KpiData } from "../../data/types"
 
 export interface OutcomeTabProps {
   onKpiClick: (filter: { label: string; value: string }) => void
-  onChartClick: (filter: { label: string; value: string }) => void
+  onChartClick: (filter: { label: string; value: string }, event?: React.MouseEvent) => void
 }
 
 // ---------------------------------------------------------------------------
@@ -94,13 +93,6 @@ const kpis: { title: string; kpi: KpiData; icon: React.ComponentType<{ className
     icon: TrendingUp,
     favorable: "up",
     clickValue: "cure_rate_lift",
-  },
-  {
-    title: "Response Rate",
-    kpi: { value: "61%", mom: 4.1, yoy: 9.8, status: "positive", spark: kpiSparkData.responseRate },
-    icon: MessageSquare,
-    favorable: "up",
-    clickValue: "response_rate",
   },
   {
     title: "Cost-to-Collect",
@@ -260,17 +252,18 @@ export function OutcomeTab({ onKpiClick, onChartClick }: OutcomeTabProps) {
     <div className="space-y-6">
 
       {/* ------------------------------------------------------------------ */}
-      {/* KPI Cards Row                                                        */}
+      {/* KPI Cards Row — 4 cards                                             */}
       {/* ------------------------------------------------------------------ */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {kpis.map(({ title, kpi, icon, favorable, clickValue }) => (
-          <div
+          <KpiCard
             key={title}
-            className="cursor-pointer"
+            title={title}
+            kpi={kpi}
+            icon={icon}
+            favorable={favorable}
             onClick={() => onKpiClick({ label: title, value: clickValue })}
-          >
-            <KpiCard title={title} kpi={kpi} icon={icon} favorable={favorable} />
-          </div>
+          />
         ))}
       </div>
 
