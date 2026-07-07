@@ -10,19 +10,12 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SettingsRouteImport } from './routes/settings'
-import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as ApprovalsRouteImport } from './routes/approvals'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as PortfolioAccountIdRouteImport } from './routes/portfolio.$accountId'
 
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PortfolioRoute = PortfolioRouteImport.update({
-  id: '/portfolio',
-  path: '/portfolio',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApprovalsRoute = ApprovalsRouteImport.update({
@@ -35,53 +28,34 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PortfolioAccountIdRoute = PortfolioAccountIdRouteImport.update({
-  id: '/$accountId',
-  path: '/$accountId',
-  getParentRoute: () => PortfolioRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/approvals': typeof ApprovalsRoute
-  '/portfolio': typeof PortfolioRouteWithChildren
   '/settings': typeof SettingsRoute
-  '/portfolio/$accountId': typeof PortfolioAccountIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/approvals': typeof ApprovalsRoute
-  '/portfolio': typeof PortfolioRouteWithChildren
   '/settings': typeof SettingsRoute
-  '/portfolio/$accountId': typeof PortfolioAccountIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/approvals': typeof ApprovalsRoute
-  '/portfolio': typeof PortfolioRouteWithChildren
   '/settings': typeof SettingsRoute
-  '/portfolio/$accountId': typeof PortfolioAccountIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    '/' | '/approvals' | '/portfolio' | '/settings' | '/portfolio/$accountId'
+  fullPaths: '/' | '/approvals' | '/settings'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/approvals' | '/portfolio' | '/settings' | '/portfolio/$accountId'
-  id:
-    | '__root__'
-    | '/'
-    | '/approvals'
-    | '/portfolio'
-    | '/settings'
-    | '/portfolio/$accountId'
+  to: '/' | '/approvals' | '/settings'
+  id: '__root__' | '/' | '/approvals' | '/settings'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ApprovalsRoute: typeof ApprovalsRoute
-  PortfolioRoute: typeof PortfolioRouteWithChildren
   SettingsRoute: typeof SettingsRoute
 }
 
@@ -92,13 +66,6 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof SettingsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/portfolio': {
-      id: '/portfolio'
-      path: '/portfolio'
-      fullPath: '/portfolio'
-      preLoaderRoute: typeof PortfolioRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/approvals': {
@@ -115,32 +82,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/portfolio/$accountId': {
-      id: '/portfolio/$accountId'
-      path: '/$accountId'
-      fullPath: '/portfolio/$accountId'
-      preLoaderRoute: typeof PortfolioAccountIdRouteImport
-      parentRoute: typeof PortfolioRoute
-    }
   }
 }
-
-interface PortfolioRouteChildren {
-  PortfolioAccountIdRoute: typeof PortfolioAccountIdRoute
-}
-
-const PortfolioRouteChildren: PortfolioRouteChildren = {
-  PortfolioAccountIdRoute: PortfolioAccountIdRoute,
-}
-
-const PortfolioRouteWithChildren = PortfolioRoute._addFileChildren(
-  PortfolioRouteChildren,
-)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ApprovalsRoute: ApprovalsRoute,
-  PortfolioRoute: PortfolioRouteWithChildren,
   SettingsRoute: SettingsRoute,
 }
 export const routeTree = rootRouteImport

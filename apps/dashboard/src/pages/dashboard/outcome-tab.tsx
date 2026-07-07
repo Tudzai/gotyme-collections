@@ -1,8 +1,8 @@
 import {
   HeartPulse,
-  TrendingUp,
-  DollarSign,
   Banknote,
+  Percent,
+  Clock,
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { KpiCard } from "../../components/kpi-card"
@@ -45,33 +45,26 @@ const kpiSparkData = {
     { date: "Jun 30", value: 40 }, { date: "Jul 1", value: 40 }, { date: "Jul 2", value: 41 },
     { date: "Jul 3", value: 41 }, { date: "Jul 4", value: 42 }, { date: "Jul 5", value: 42 },
   ],
-  cureRateLift: [
-    { date: "Jun 21", value: 8 }, { date: "Jun 22", value: 9 }, { date: "Jun 23", value: 9 },
-    { date: "Jun 24", value: 10 }, { date: "Jun 25", value: 10 }, { date: "Jun 26", value: 11 },
-    { date: "Jun 27", value: 11 }, { date: "Jun 28", value: 12 }, { date: "Jun 29", value: 12 },
-    { date: "Jun 30", value: 13 }, { date: "Jul 1", value: 13 }, { date: "Jul 2", value: 13 },
-    { date: "Jul 3", value: 14 }, { date: "Jul 4", value: 14 }, { date: "Jul 5", value: 14 },
-  ],
-  responseRate: [
-    { date: "Jun 21", value: 53 }, { date: "Jun 22", value: 54 }, { date: "Jun 23", value: 55 },
-    { date: "Jun 24", value: 55 }, { date: "Jun 25", value: 56 }, { date: "Jun 26", value: 57 },
-    { date: "Jun 27", value: 57 }, { date: "Jun 28", value: 58 }, { date: "Jun 29", value: 59 },
-    { date: "Jun 30", value: 59 }, { date: "Jul 1", value: 60 }, { date: "Jul 2", value: 60 },
-    { date: "Jul 3", value: 61 }, { date: "Jul 4", value: 61 }, { date: "Jul 5", value: 61 },
-  ],
-  costToCollect: [
-    { date: "Jun 21", value: 16.2 }, { date: "Jun 22", value: 15.9 }, { date: "Jun 23", value: 15.5 },
-    { date: "Jun 24", value: 15.1 }, { date: "Jun 25", value: 14.8 }, { date: "Jun 26", value: 14.5 },
-    { date: "Jun 27", value: 14.1 }, { date: "Jun 28", value: 13.8 }, { date: "Jun 29", value: 13.5 },
-    { date: "Jun 30", value: 13.2 }, { date: "Jul 1", value: 12.9 }, { date: "Jul 2", value: 12.7 },
-    { date: "Jul 3", value: 12.5 }, { date: "Jul 4", value: 12.4 }, { date: "Jul 5", value: 12.4 },
-  ],
-  recoveredAmount: [
+  amountRecovered: [
     { date: "Jun 21", value: 1900000 }, { date: "Jun 22", value: 1980000 }, { date: "Jun 23", value: 2020000 },
     { date: "Jun 24", value: 2080000 }, { date: "Jun 25", value: 2120000 }, { date: "Jun 26", value: 2180000 },
     { date: "Jun 27", value: 2240000 }, { date: "Jun 28", value: 2300000 }, { date: "Jun 29", value: 2380000 },
     { date: "Jun 30", value: 2450000 }, { date: "Jul 1", value: 2520000 }, { date: "Jul 2", value: 2610000 },
     { date: "Jul 3", value: 2700000 }, { date: "Jul 4", value: 2780000 }, { date: "Jul 5", value: 2800000 },
+  ],
+  recoveryVsLending: [
+    { date: "Jun 21", value: 42 }, { date: "Jun 22", value: 43 }, { date: "Jun 23", value: 44 },
+    { date: "Jun 24", value: 44 }, { date: "Jun 25", value: 45 }, { date: "Jun 26", value: 46 },
+    { date: "Jun 27", value: 46 }, { date: "Jun 28", value: 47 }, { date: "Jun 29", value: 47 },
+    { date: "Jun 30", value: 48 }, { date: "Jul 1", value: 49 }, { date: "Jul 2", value: 50 },
+    { date: "Jul 3", value: 51 }, { date: "Jul 4", value: 52 }, { date: "Jul 5", value: 52 },
+  ],
+  avgDaysLate: [
+    { date: "Jun 21", value: 18 }, { date: "Jun 22", value: 17 }, { date: "Jun 23", value: 17 },
+    { date: "Jun 24", value: 16 }, { date: "Jun 25", value: 16 }, { date: "Jun 26", value: 15 },
+    { date: "Jun 27", value: 15 }, { date: "Jun 28", value: 14 }, { date: "Jun 29", value: 14 },
+    { date: "Jun 30", value: 13 }, { date: "Jul 1", value: 13 }, { date: "Jul 2", value: 12 },
+    { date: "Jul 3", value: 12 }, { date: "Jul 4", value: 11 }, { date: "Jul 5", value: 11 },
   ],
 }
 
@@ -88,25 +81,25 @@ const kpis: { title: string; kpi: KpiData; icon: React.ComponentType<{ className
     clickValue: "cure_rate",
   },
   {
-    title: "Cure Rate Lift vs Control",
-    kpi: { value: "+14pp", mom: 6.2, yoy: 22.4, status: "positive", spark: kpiSparkData.cureRateLift },
-    icon: TrendingUp,
-    favorable: "up",
-    clickValue: "cure_rate_lift",
-  },
-  {
-    title: "Cost-to-Collect",
-    kpi: { value: "₱12.40", mom: -14.2, yoy: -28.6, status: "positive", spark: kpiSparkData.costToCollect },
-    icon: DollarSign,
-    favorable: "down",
-    clickValue: "cost_to_collect",
-  },
-  {
-    title: "Recovered Amount",
-    kpi: { value: "₱2.8M", mom: 11.6, yoy: 34.5, status: "positive", spark: kpiSparkData.recoveredAmount },
+    title: "Amount Recovered",
+    kpi: { value: "₱2.8M", mom: 11.6, yoy: 34.5, status: "positive", spark: kpiSparkData.amountRecovered },
     icon: Banknote,
     favorable: "up",
     clickValue: "recovered_amount",
+  },
+  {
+    title: "Recovery vs Lending",
+    kpi: { value: "52%", mom: 3.8, yoy: 12.4, status: "positive", spark: kpiSparkData.recoveryVsLending },
+    icon: Percent,
+    favorable: "up",
+    clickValue: "recovery_vs_lending",
+  },
+  {
+    title: "Avg Days Late",
+    kpi: { value: 11, mom: -8.3, yoy: -22.4, status: "positive", spark: kpiSparkData.avgDaysLate },
+    icon: Clock,
+    favorable: "down",
+    clickValue: "avg_days_late",
   },
 ]
 

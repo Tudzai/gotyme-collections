@@ -1,4 +1,4 @@
-import { LayoutDashboard, Wallet, ClipboardCheck, Settings, ChevronUp } from 'lucide-react'
+import { LayoutDashboard, ClipboardCheck, Settings, ChevronUp } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import { useRouterState } from '@tanstack/react-router'
 import {
@@ -27,7 +27,6 @@ import { useRole } from '../context/role-context'
 
 const navItems = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/portfolio', label: 'Portfolio', icon: Wallet },
   { to: '/approvals', label: 'Approvals', icon: ClipboardCheck },
   { to: '/settings', label: 'Settings', icon: Settings },
 ] as const

@@ -39,34 +39,28 @@ const kpiSparkData = {
     { date: "Apr", value: 10 }, { date: "May", value: 11 }, { date: "Jun", value: 10 },
     { date: "Jul", value: 12 },
   ],
-  criticalActionsToday: [
+  criticalDueToday: [
     { date: "Jan", value: 7 }, { date: "Feb", value: 6 }, { date: "Mar", value: 8 },
     { date: "Apr", value: 5 }, { date: "May", value: 6 }, { date: "Jun", value: 4 },
     { date: "Jul", value: 3 },
   ],
-  acceptanceRate: [
-    { date: "Jan", value: 68 }, { date: "Feb", value: 70 }, { date: "Mar", value: 72 },
-    { date: "Apr", value: 74 }, { date: "May", value: 75 }, { date: "Jun", value: 76 },
-    { date: "Jul", value: 79 },
+  treatmentAcceptanceRate: [
+    { date: "Jan", value: 62 }, { date: "Feb", value: 65 }, { date: "Mar", value: 67 },
+    { date: "Apr", value: 70 }, { date: "May", value: 72 }, { date: "Jun", value: 74 },
+    { date: "Jul", value: 76 },
   ],
-  completedToday: [
-    { date: "Jan", value: 4 }, { date: "Feb", value: 5 }, { date: "Mar", value: 6 },
-    { date: "Apr", value: 7 }, { date: "May", value: 6 }, { date: "Jun", value: 7 },
-    { date: "Jul", value: 8 },
-  ],
-  autoApprovalEligible: [
-    { date: "Jan", value: 2 }, { date: "Feb", value: 2 }, { date: "Mar", value: 3 },
-    { date: "Apr", value: 3 }, { date: "May", value: 4 }, { date: "Jun", value: 4 },
-    { date: "Jul", value: 5 },
+  autoApprovalRate: [
+    { date: "Jan", value: 28 }, { date: "Feb", value: 30 }, { date: "Mar", value: 33 },
+    { date: "Apr", value: 35 }, { date: "May", value: 37 }, { date: "Jun", value: 40 },
+    { date: "Jul", value: 42 },
   ],
 }
 
 const kpis: KpiData[] = [
-  { value: 12,    mom: 20.0,  yoy: 5.2,   spark: kpiSparkData.pendingApprovals,     status: "warning"  },
-  { value: 3,     mom: -25.0, yoy: -40.0, spark: kpiSparkData.criticalActionsToday, status: "positive" },
-  { value: "79%", mom: 3.8,   yoy: 12.1,  spark: kpiSparkData.acceptanceRate,       status: "positive" },
-  { value: 8,     mom: 14.3,  yoy: 33.3,  spark: kpiSparkData.completedToday,       status: "positive" },
-  { value: 5,     mom: 25.0,  yoy: 66.7,  spark: kpiSparkData.autoApprovalEligible, status: "neutral"  },
+  { value: 12,    mom: 20.0,  yoy: 5.2,   spark: kpiSparkData.pendingApprovals,        status: "warning"  },
+  { value: 3,     mom: -25.0, yoy: -40.0, spark: kpiSparkData.criticalDueToday,        status: "positive" },
+  { value: "76%", mom: 2.7,   yoy: 14.3,  spark: kpiSparkData.treatmentAcceptanceRate, status: "positive" },
+  { value: "42%", mom: 5.0,   yoy: 20.0,  spark: kpiSparkData.autoApprovalRate,        status: "positive" },
 ]
 
 // Derived action items from recommendations (extend with action-specific fields)
@@ -361,10 +355,10 @@ export function ActionTab({ onKpiClick, onChartClick }: ActionTabProps) {
       {/* ── KPI Cards — 4 cards ────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
-          { title: "Pending Approvals",             icon: Clock,         favorable: "down" as const, filter: { label: "Approval Status", value: "Pending"   } },
-          { title: "Critical Actions Due Today",    icon: AlertCircle,   favorable: "down" as const, filter: { label: "Priority",        value: "Critical"  } },
-          { title: "Acceptance Rate",               icon: ThumbsUp,      favorable: "up"   as const, filter: { label: "Metric",          value: "Acceptance"} },
-          { title: "Auto-Approval Eligible",        icon: Zap,           favorable: "up"   as const, filter: { label: "Auto-Approval",   value: "Eligible"  } },
+          { title: "Pending Approvals",           icon: Clock,       favorable: "down" as const, filter: { label: "Approval Status", value: "Pending"   } },
+          { title: "Critical Due Today",          icon: AlertCircle, favorable: "down" as const, filter: { label: "Priority",        value: "Critical"  } },
+          { title: "Treatment Acceptance Rate",   icon: ThumbsUp,    favorable: "up"   as const, filter: { label: "Metric",          value: "Acceptance"} },
+          { title: "Auto-Approval Rate",          icon: Zap,         favorable: "up"   as const, filter: { label: "Auto-Approval",   value: "Rate"      } },
         ].map((cfg, i) => (
           <KpiCard
             key={cfg.title}

@@ -1,9 +1,9 @@
 import React from "react"
 import {
-  Activity,
-  AlertTriangle,
-  ShieldAlert,
   Banknote,
+  AlertTriangle,
+  Clock,
+  Percent,
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
@@ -35,17 +35,29 @@ export interface OverviewTabProps {
 // ---------------------------------------------------------------------------
 
 const kpiSparkData = {
-  totalAccounts: [
-    { date: "Aug", value: 288 }, { date: "Sep", value: 291 }, { date: "Oct", value: 294 },
-    { date: "Nov", value: 296 }, { date: "Dec", value: 298 }, { date: "Jan", value: 300 },
-    { date: "Feb", value: 302 }, { date: "Mar", value: 304 }, { date: "Apr", value: 306 },
-    { date: "May", value: 308 }, { date: "Jun", value: 311 }, { date: "Jul", value: 312 },
+  totalDebt: [
+    { date: "Aug", value: 3.1 }, { date: "Sep", value: 3.2 }, { date: "Oct", value: 3.3 },
+    { date: "Nov", value: 3.4 }, { date: "Dec", value: 3.5 }, { date: "Jan", value: 3.6 },
+    { date: "Feb", value: 3.7 }, { date: "Mar", value: 3.8 }, { date: "Apr", value: 3.9 },
+    { date: "May", value: 4.0 }, { date: "Jun", value: 4.1 }, { date: "Jul", value: 4.2 },
   ],
-  atRiskAccounts: [
-    { date: "Aug", value: 38 }, { date: "Sep", value: 41 }, { date: "Oct", value: 44 },
-    { date: "Nov", value: 46 }, { date: "Dec", value: 48 }, { date: "Jan", value: 42 },
-    { date: "Feb", value: 40 }, { date: "Mar", value: 43 }, { date: "Apr", value: 45 },
-    { date: "May", value: 41 }, { date: "Jun", value: 44 }, { date: "Jul", value: 47 },
+  atRiskDebt: [
+    { date: "Aug", value: 0.9 }, { date: "Sep", value: 1.0 }, { date: "Oct", value: 1.1 },
+    { date: "Nov", value: 1.1 }, { date: "Dec", value: 1.2 }, { date: "Jan", value: 1.0 },
+    { date: "Feb", value: 0.9 }, { date: "Mar", value: 1.0 }, { date: "Apr", value: 1.1 },
+    { date: "May", value: 1.0 }, { date: "Jun", value: 1.1 }, { date: "Jul", value: 1.2 },
+  ],
+  predictedLate: [
+    { date: "Aug", value: 28 }, { date: "Sep", value: 30 }, { date: "Oct", value: 32 },
+    { date: "Nov", value: 34 }, { date: "Dec", value: 35 }, { date: "Jan", value: 31 },
+    { date: "Feb", value: 29 }, { date: "Mar", value: 32 }, { date: "Apr", value: 34 },
+    { date: "May", value: 33 }, { date: "Jun", value: 35 }, { date: "Jul", value: 47 },
+  ],
+  lateVsPredicted: [
+    { date: "Aug", value: 71 }, { date: "Sep", value: 73 }, { date: "Oct", value: 75 },
+    { date: "Nov", value: 74 }, { date: "Dec", value: 76 }, { date: "Jan", value: 72 },
+    { date: "Feb", value: 70 }, { date: "Mar", value: 73 }, { date: "Apr", value: 75 },
+    { date: "May", value: 74 }, { date: "Jun", value: 76 }, { date: "Jul", value: 78 },
   ],
   criticalAccounts: [
     { date: "Aug", value: 9 }, { date: "Sep", value: 11 }, { date: "Oct", value: 10 },
@@ -53,17 +65,11 @@ const kpiSparkData = {
     { date: "Feb", value: 7 }, { date: "Mar", value: 9 }, { date: "Apr", value: 8 },
     { date: "May", value: 7 }, { date: "Jun", value: 7 }, { date: "Jul", value: 6 },
   ],
-  predictedMissedPayment: [
-    { date: "Aug", value: 3.1 }, { date: "Sep", value: 3.4 }, { date: "Oct", value: 3.6 },
-    { date: "Nov", value: 3.8 }, { date: "Dec", value: 3.9 }, { date: "Jan", value: 3.7 },
-    { date: "Feb", value: 3.5 }, { date: "Mar", value: 3.6 }, { date: "Apr", value: 3.8 },
-    { date: "May", value: 3.9 }, { date: "Jun", value: 4.1 }, { date: "Jul", value: 4.2 },
-  ],
-  avgDaysEarlyWarning: [
-    { date: "Aug", value: 7.2 }, { date: "Sep", value: 7.5 }, { date: "Oct", value: 7.8 },
-    { date: "Nov", value: 7.9 }, { date: "Dec", value: 8.1 }, { date: "Jan", value: 8.3 },
-    { date: "Feb", value: 8.4 }, { date: "Mar", value: 8.6 }, { date: "Apr", value: 8.8 },
-    { date: "May", value: 8.8 }, { date: "Jun", value: 9.0 }, { date: "Jul", value: 9.2 },
+  atRiskAccounts: [
+    { date: "Aug", value: 38 }, { date: "Sep", value: 41 }, { date: "Oct", value: 44 },
+    { date: "Nov", value: 46 }, { date: "Dec", value: 48 }, { date: "Jan", value: 42 },
+    { date: "Feb", value: 40 }, { date: "Mar", value: 43 }, { date: "Apr", value: 45 },
+    { date: "May", value: 41 }, { date: "Jun", value: 44 }, { date: "Jul", value: 47 },
   ],
 }
 
@@ -71,36 +77,36 @@ const kpiSparkData = {
 // KPI data
 // ---------------------------------------------------------------------------
 
-const totalAccountsKpi: KpiData = {
-  value: 312,
-  mom: 2.1,
-  yoy: 8.4,
-  status: "neutral",
-  spark: kpiSparkData.totalAccounts,
-}
-
-const atRiskKpi: KpiData = {
-  value: 47,
-  mom: 12.5,
-  yoy: -3.2,
-  status: "warning",
-  spark: kpiSparkData.atRiskAccounts,
-}
-
-const criticalKpi: KpiData = {
-  value: 6,
-  mom: -8.3,
-  yoy: -15.0,
-  status: "positive",
-  spark: kpiSparkData.criticalAccounts,
-}
-
-const predictedMissedKpi: KpiData = {
+const totalDebtKpi: KpiData = {
   value: "₱4.2M",
+  mom: 2.5,
+  yoy: 12.3,
+  status: "warning",
+  spark: kpiSparkData.totalDebt,
+}
+
+const atRiskDebtKpi: KpiData = {
+  value: "₱1.2M",
+  mom: 9.1,
+  yoy: 5.4,
+  status: "negative",
+  spark: kpiSparkData.atRiskDebt,
+}
+
+const predictedLateKpi: KpiData = {
+  value: 47,
   mom: 6.8,
   yoy: 14.2,
   status: "warning",
-  spark: kpiSparkData.predictedMissedPayment,
+  spark: kpiSparkData.predictedLate,
+}
+
+const lateVsPredictedKpi: KpiData = {
+  value: "78%",
+  mom: 2.6,
+  yoy: -4.1,
+  status: "neutral",
+  spark: kpiSparkData.lateVsPredicted,
 }
 
 // ---------------------------------------------------------------------------
@@ -270,30 +276,30 @@ export function OverviewTab({ onKpiClick, onChartClick }: OverviewTabProps) {
       {/* ------------------------------------------------------------------ */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard
-          title="Total Accounts Monitored"
-          kpi={totalAccountsKpi}
-          icon={Activity}
-          favorable="up"
+          title="Total Debt to Collect"
+          kpi={totalDebtKpi}
+          icon={Banknote}
+          favorable="down"
           onClick={onKpiClick}
         />
         <KpiCard
-          title="At-Risk Accounts"
-          kpi={atRiskKpi}
+          title="At-Risk Debt"
+          kpi={atRiskDebtKpi}
           icon={AlertTriangle}
           favorable="down"
           onClick={onKpiClick}
         />
         <KpiCard
-          title="Critical Risk Accounts"
-          kpi={criticalKpi}
-          icon={ShieldAlert}
+          title="Predicted Late Accounts"
+          kpi={predictedLateKpi}
+          icon={Clock}
           favorable="down"
           onClick={onKpiClick}
         />
         <KpiCard
-          title="Predicted Missed Payment"
-          kpi={predictedMissedKpi}
-          icon={Banknote}
+          title="Late vs Predicted Rate"
+          kpi={lateVsPredictedKpi}
+          icon={Percent}
           favorable="down"
           onClick={onKpiClick}
         />

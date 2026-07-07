@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useRole } from '../../context/role-context'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible'
 import { Button } from '@/components/ui/button'
@@ -126,24 +127,24 @@ const outcomeData: OutcomeDetailRow[] = [
 ]
 
 const kpiDataFilter: Record<string, (row: OverviewDetailRow) => boolean> = {
-  'Total Accounts Monitored': () => true,
-  'At-Risk Accounts':         (r) => r.riskLevel === 'Critical' || r.riskLevel === 'High',
-  'Critical Risk Accounts':   (r) => r.riskLevel === 'Critical',
-  'Predicted Missed Payment':  (r) => r.status === 'Has Missed Payments',
+  'Total Debt to Collect':    () => true,
+  'At-Risk Debt':             (r) => r.riskLevel === 'Critical' || r.riskLevel === 'High',
+  'Predicted Late Accounts':  (r) => r.status === 'Has Missed Payments' || r.riskLevel === 'Critical' || r.riskLevel === 'High',
+  'Late vs Predicted Rate':   (r) => r.status === 'Has Missed Payments',
 }
 
 const kpiActionFilter: Record<string, (row: ActionDetailRow) => boolean> = {
   'Pending Approvals':         (r) => r.approvalStatus === 'Pending',
   'Critical Due Today':        (r) => r.riskLevel === 'Critical',
-  'Acceptance Rate':           (r) => r.approvalStatus === 'Approved' || r.approvalStatus === 'Auto-Approved',
-  'Auto-Approval Eligible':    (r) => r.autoApprovalEligible === 'Yes',
+  'Treatment Acceptance Rate': (r) => r.approvalStatus === 'Approved' || r.approvalStatus === 'Auto-Approved',
+  'Auto-Approval Rate':        (r) => r.approvalStatus === 'Auto-Approved',
 }
 
 const kpiOutcomeFilter: Record<string, (row: OutcomeDetailRow) => boolean> = {
-  'Cure Rate':                  (r) => r.cureFlag === 'Yes',
-  'Cure Rate Lift vs Control':  (r) => r.controlGroup === 'No' && r.cureFlag === 'Yes',
-  'Cost-to-Collect':            () => true,
-  'Recovered Amount':           (r) => r.paymentOutcome === 'Cured',
+  'Cure Rate':            (r) => r.cureFlag === 'Yes',
+  'Amount Recovered':     (r) => r.paymentOutcome === 'Cured',
+  'Recovery vs Lending':  (r) => r.paymentOutcome === 'Cured',
+  'Avg Days Late':        () => true,
 }
 
 const drawerTitles: Record<ActiveTab, string> = {  overview: 'Portfolio Detail — All Accounts',
@@ -161,6 +162,11 @@ export function DashboardPage() {
   const [filtersOpen, setFiltersOpen] = useState(false)
   const [activeFilter, setActiveFilter] = useState<{ label: string; value: string } | undefined>(undefined)
   const [chartFilters, setChartFilters] = useState<{ label: string; value: string }[]>([])
+  const { currentUser } = useRole()
+  const showActionTab = currentUser.role !== 'director'
+
+  // reset to overview if director switches away from action tab
+  const effectiveTab = (!showActionTab && activeTab === 'action') ? 'overview' : activeTab
 
   function handleKpiClick(filter: { label: string; value: string }) {
     setActiveFilter(filter)
@@ -200,7 +206,7 @@ export function DashboardPage() {
   }
 
   function renderModal() {
-    if (activeTab === 'overview') {
+    if (effectiveTab === 'overview') {
       const filterFn = activeFilter ? (kpiDataFilter[activeFilter.label] ?? (() => true)) : () => true
       return (
         <DetailModal<OverviewDetailRow>
@@ -216,7 +222,7 @@ export function DashboardPage() {
         />
       )
     }
-    if (activeTab === 'action') {
+    if (effectiveTab === 'action') {
       const filterFn = activeFilter ? (kpiActionFilter[activeFilter.label] ?? (() => true)) : () => true
       return (
         <DetailModal<ActionDetailRow>
@@ -253,7 +259,7 @@ export function DashboardPage() {
       <Collapsible open={filtersOpen} onOpenChange={setFiltersOpen}>
         {/* Tabs */}
         <Tabs
-          value={activeTab}
+          value={effectiveTab}
           onValueChange={(v) => { setActiveTab(v as ActiveTab); setChartFilters([]) }}
           className="w-full"
         >
@@ -262,7 +268,7 @@ export function DashboardPage() {
             <FiltersTrigger open={filtersOpen} />
             <TabsList>
               <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="action">Action</TabsTrigger>
+              {showActionTab && <TabsTrigger value="action">Action</TabsTrigger>}
               <TabsTrigger value="outcome">Outcome</TabsTrigger>
             </TabsList>
             <div className="flex-1 flex items-center gap-1.5 flex-wrap">
@@ -327,10 +333,12 @@ export function DashboardPage() {
         </TabsContent>
 
         <TabsContent value="action" className="mt-4">
-          <ActionTab
-            onKpiClick={handleKpiClick}
-            onChartClick={(f, e) => handleChartClick(f, e)}
-          />
+          {showActionTab && (
+            <ActionTab
+              onKpiClick={handleKpiClick}
+              onChartClick={(f, e) => handleChartClick(f, e)}
+            />
+          )}
         </TabsContent>
 
         <TabsContent value="outcome" className="mt-4">
