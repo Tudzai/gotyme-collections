@@ -1,4 +1,4 @@
-import { LayoutDashboard, ClipboardCheck, Settings, ChevronUp } from 'lucide-react'
+import { LayoutDashboard, Wallet, ClipboardCheck, Settings, ChevronUp } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import { useRouterState } from '@tanstack/react-router'
 import {
@@ -26,9 +26,10 @@ import { Badge } from '@/components/ui/badge'
 import { useRole } from '../context/role-context'
 
 const navItems = [
-  { to: '/', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/approvals', label: 'Approvals', icon: ClipboardCheck },
-  { to: '/settings', label: 'Settings', icon: Settings },
+  { to: '/', label: 'Dashboard', icon: LayoutDashboard, roles: null },
+  { to: '/portfolio', label: 'Portfolio', icon: Wallet, roles: ['manager', 'analyst'] },
+  { to: '/approvals', label: 'Approvals', icon: ClipboardCheck, roles: null },
+  { to: '/settings', label: 'Settings', icon: Settings, roles: null },
 ] as const
 
 const roleLabel: Record<string, string> = {
@@ -68,7 +69,7 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {navItems.map((item) => (
+              {navItems.filter(item => !item.roles || item.roles.includes(currentUser.role as 'manager' | 'analyst')).map((item) => (
                 <SidebarMenuItem key={item.to}>
                   <SidebarMenuButton
                     isActive={item.to === currentPath}
