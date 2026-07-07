@@ -281,7 +281,7 @@ export function DataTable<T extends Record<string, unknown>>({
           <TableHeader
             className={
               stickyHeader
-                ? "sticky top-0 z-10 bg-background shadow-[0_1px_0_0_hsl(var(--border))]"
+                ? "sticky top-0 z-[1] bg-background shadow-[0_1px_0_0_hsl(var(--border))]"
                 : undefined
             }
           >

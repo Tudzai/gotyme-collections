@@ -377,8 +377,8 @@ export function ActionTab({ onKpiClick, onChartClick }: ActionTabProps) {
         ))}
       </div>
 
-      {/* ── Charts row 1: Funnel + Risk Level ──────────────────────────────── */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      {/* ── Charts ─────────────────────────────────────────────────────────── */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
 
         {/* Action Status Funnel */}
         <Card
@@ -423,11 +423,6 @@ export function ActionTab({ onKpiClick, onChartClick }: ActionTabProps) {
             </ChartContainer>
           </CardContent>
         </Card>
-      </div>
-
-      {/* ── Charts row 2: Workload + Channel Mix ───────────────────────────── */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-
         {/* Workload by Owner */}
         <Card
           className="cursor-pointer hover:ring-1 hover:ring-primary/40 transition-all"
@@ -483,11 +478,6 @@ export function ActionTab({ onKpiClick, onChartClick }: ActionTabProps) {
             </PieChart>
           </CardContent>
         </Card>
-      </div>
-
-      {/* ── Charts row 3: SLA Timeline + Recent Activity ───────────────────── */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-
         {/* SLA Timeline */}
         <Card
           className="cursor-pointer hover:ring-1 hover:ring-primary/40 transition-all"

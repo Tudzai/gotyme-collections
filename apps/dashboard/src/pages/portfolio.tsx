@@ -18,7 +18,6 @@ import {
   ChevronUp,
 } from "lucide-react"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
-import { GlobalFilters } from "../components/global-filters"
 import { DataTable } from "../components/data-table"
 import type { ColumnDef } from "../components/data-table"
 import { RiskBadge } from "../components/risk-badge"
@@ -204,8 +203,6 @@ export function PortfolioPage({ onViewAccount }: PortfolioPageProps) {
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Global Filters */}
-      <GlobalFilters />
 
       {/* Summary strip */}
       <div className="flex flex-wrap items-center gap-4 text-sm px-0.5">

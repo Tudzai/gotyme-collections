@@ -26,7 +26,6 @@ import { RiskBadge } from "../components/risk-badge"
 import { ChannelIcon } from "../components/channel-icon"
 import { RiskDriverList } from "../components/risk-driver-list"
 import { TreatmentTimeline } from "../components/treatment-timeline"
-import { GlobalFilters } from "../components/global-filters"
 import { recommendations, historicalRecommendations } from "../data/mock-data"
 import type { Recommendation, ApprovalStatus } from "../data/types"
 
@@ -439,8 +438,6 @@ export function ApprovalsPage() {
   return (
     <div className="flex flex-col gap-4 min-h-0">
 
-      {/* Global Filters */}
-      <GlobalFilters />
 
       {/* Auto-approve toast notice */}
       {autoApproveNotice !== null && (

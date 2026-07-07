@@ -267,10 +267,8 @@ export function OutcomeTab({ onKpiClick, onChartClick }: OutcomeTabProps) {
         ))}
       </div>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Charts — Row 1: Cure Rate Trend + Channel Effectiveness             */}
-      {/* ------------------------------------------------------------------ */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      {/* Charts */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
 
         {/* Chart 1: Cure Rate Trend */}
         <Card
@@ -346,13 +344,6 @@ export function OutcomeTab({ onKpiClick, onChartClick }: OutcomeTabProps) {
             </p>
           </CardContent>
         </Card>
-      </div>
-
-      {/* ------------------------------------------------------------------ */}
-      {/* Charts — Row 2: Cost vs Cure Rate Scatter + Outcome Breakdown       */}
-      {/* ------------------------------------------------------------------ */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-
         {/* Chart 3: Cost vs Cure Rate Scatter */}
         <Card
           className="cursor-pointer hover:ring-1 hover:ring-ring transition-all"
@@ -443,13 +434,6 @@ export function OutcomeTab({ onKpiClick, onChartClick }: OutcomeTabProps) {
             </ChartContainer>
           </CardContent>
         </Card>
-      </div>
-
-      {/* ------------------------------------------------------------------ */}
-      {/* Charts — Row 3: Cure Rate by Risk Level + Early Warning Accuracy    */}
-      {/* ------------------------------------------------------------------ */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-
         {/* Chart 5: Cure Rate by Risk Level */}
         <Card
           className="cursor-pointer hover:ring-1 hover:ring-ring transition-all"

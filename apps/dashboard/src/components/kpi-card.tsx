@@ -12,34 +12,32 @@ interface KpiCardProps {
   onClick?: (filter: { label: string; value: string }) => void
 }
 
-function changeBadgeClass(change: number, favorable: "up" | "down"): string {
-  const absChange = Math.abs(change)
-  if (absChange < 0.5) return "bg-slate-100 text-slate-600"
-  const isGood = favorable === "up" ? change > 0 : change < 0
-  return isGood
-    ? "bg-emerald-100 text-emerald-700"
-    : "bg-red-100 text-red-700"
-}
-
 function formatChange(value: number): string {
   const sign = value >= 0 ? "+" : ""
   return `${sign}${value.toFixed(1)}%`
 }
 
-function TrendIcon({ change, favorable }: { change: number; favorable: "up" | "down" }) {
-  const absChange = Math.abs(change)
-  if (absChange < 0.5) return <Minus className="h-3 w-3" />
-  const isGood = favorable === "up" ? change > 0 : change < 0
-  return isGood
-    ? <TrendingUp className="h-3 w-3" />
-    : <TrendingDown className="h-3 w-3" />
+function TrendIndicator({ change, favorable }: { change: number; favorable: "up" | "down" }) {
+  const abs = Math.abs(change)
+  if (abs < 0.5) return <Minus className="h-3 w-3 text-muted-foreground" />
+  const good = favorable === "up" ? change > 0 : change < 0
+  return good
+    ? <TrendingUp className="h-3 w-3 text-emerald-500" />
+    : <TrendingDown className="h-3 w-3 text-red-500" />
 }
 
-const STATUS_BORDER: Record<KpiData["status"], string> = {
-  positive: "border-l-[3px] border-l-emerald-500",
-  negative: "border-l-[3px] border-l-red-500",
-  warning:  "border-l-[3px] border-l-amber-500",
-  neutral:  "border-l-[3px] border-l-slate-300",
+function changeColor(change: number, favorable: "up" | "down"): string {
+  const abs = Math.abs(change)
+  if (abs < 0.5) return "text-muted-foreground"
+  const good = favorable === "up" ? change > 0 : change < 0
+  return good ? "text-emerald-600" : "text-red-500"
+}
+
+const ICON_BG: Record<KpiData["status"], string> = {
+  positive: "bg-emerald-500/10 text-emerald-600",
+  negative: "bg-red-500/10 text-red-500",
+  warning:  "bg-amber-500/10 text-amber-600",
+  neutral:  "bg-slate-100 text-slate-500",
 }
 
 const SPARK_COLOR: Record<KpiData["status"], string> = {
@@ -50,61 +48,55 @@ const SPARK_COLOR: Record<KpiData["status"], string> = {
 }
 
 export function KpiCard({ title, kpi, icon: Icon, favorable = "up", onClick }: KpiCardProps) {
-  const borderClass = STATUS_BORDER[kpi.status]
-  const momClass = changeBadgeClass(kpi.mom, favorable)
-  const yoyClass = changeBadgeClass(kpi.yoy, favorable)
   const sparkColor = SPARK_COLOR[kpi.status]
+  const iconClass = ICON_BG[kpi.status]
 
   function handleClick() {
-    if (onClick) {
-      onClick({ label: title, value: String(kpi.value) })
-    }
+    onClick?.({ label: title, value: String(kpi.value) })
   }
 
   return (
     <Card
-      className={`${borderClass} transition-shadow ${onClick ? 'cursor-pointer hover:shadow-md' : ''}`}
+      className={`overflow-hidden transition-all duration-200 ${onClick ? 'cursor-pointer hover:shadow-md hover:-translate-y-0.5' : ''}`}
       onClick={handleClick}
       role={onClick ? 'button' : undefined}
       tabIndex={onClick ? 0 : undefined}
       onKeyDown={onClick ? (e) => { if (e.key === 'Enter' || e.key === ' ') handleClick() } : undefined}
     >
-      <CardContent className="p-4 flex flex-col gap-2">
-        {/* Title row */}
-        <div className="flex items-center justify-between">
-          <p className="text-xs text-muted-foreground font-medium leading-none tracking-wide uppercase">{title}</p>
-          <Icon className="h-4 w-4 text-muted-foreground shrink-0" />
+      <CardContent className="p-5 flex flex-col gap-3">
+        {/* Icon + title */}
+        <div className="flex items-start justify-between gap-2">
+          <p className="text-sm text-muted-foreground font-medium leading-snug">{title}</p>
+          <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${iconClass}`}>
+            <Icon className="h-4 w-4" />
+          </div>
         </div>
 
-        {/* Main value — centered, dominant */}
-        <p className="text-3xl font-bold tracking-tight text-center py-1">
+        {/* Main value */}
+        <p className="text-3xl font-bold tracking-tight leading-none">
           {typeof kpi.value === "number" ? kpi.value.toLocaleString() : kpi.value}
         </p>
 
-        {/* MoM / YoY chips */}
-        <div className="flex items-center justify-center gap-2">
-          <span className={`inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[10px] font-semibold ${momClass}`}>
-            <TrendIcon change={kpi.mom} favorable={favorable} />
-            MoM {formatChange(kpi.mom)}
+        {/* MoM / YoY inline */}
+        <div className="flex items-center gap-3 text-xs">
+          <span className="flex items-center gap-1">
+            <TrendIndicator change={kpi.mom} favorable={favorable} />
+            <span className={`font-medium ${changeColor(kpi.mom, favorable)}`}>{formatChange(kpi.mom)}</span>
+            <span className="text-muted-foreground">MoM</span>
           </span>
-          <span className={`inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[10px] font-semibold ${yoyClass}`}>
-            <TrendIcon change={kpi.yoy} favorable={favorable} />
-            YoY {formatChange(kpi.yoy)}
+          <span className="text-muted-foreground/40">·</span>
+          <span className="flex items-center gap-1">
+            <TrendIndicator change={kpi.yoy} favorable={favorable} />
+            <span className={`font-medium ${changeColor(kpi.yoy, favorable)}`}>{formatChange(kpi.yoy)}</span>
+            <span className="text-muted-foreground">YoY</span>
           </span>
         </div>
 
-        {/* Optional target */}
-        {kpi.target !== undefined && (
-          <p className="text-[10px] text-muted-foreground text-center">
-            Target: {typeof kpi.target === 'number' ? kpi.target.toLocaleString() : kpi.target}
-          </p>
-        )}
-
-        {/* Sparkline with markers */}
-        <div className="mt-1 -mx-1">
+        {/* Sparkline */}
+        <div className="-mx-1 -mb-1">
           <Sparkline
             data={kpi.spark}
-            height={40}
+            height={36}
             color={sparkColor}
             showMarkers
           />

@@ -302,7 +302,7 @@ export function OverviewTab({ onKpiClick, onChartClick }: OverviewTabProps) {
       {/* ------------------------------------------------------------------ */}
       {/* Charts — 2-column grid                                               */}
       {/* ------------------------------------------------------------------ */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Chart 1: Risk Score Distribution */}
         <Card>
           <CardHeader>

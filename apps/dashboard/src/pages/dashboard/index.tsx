@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { TableIcon, X } from 'lucide-react'
-import { GlobalFilters } from '../../components/global-filters'
+import { FiltersTrigger, FilterChips, FiltersPanel } from '../../components/global-filters'
 import { DetailModal, type ColumnDef as DetailColDef } from '../../components/detail-modal'
 import { OverviewTab } from './overview-tab'
 import { ActionTab } from './action-tab'
@@ -124,8 +125,28 @@ const outcomeData: OutcomeDetailRow[] = [
   { customer: 'Angela Rivera',     product: 'Personal Loan', channel: 'SMS',      paymentOutcome: 'Partial',     amountRecovered: formatCurrency(3920),  cost: '₱2.10',  cureFlag: 'No',  daysToCure: '—',  controlGroup: 'No'  },
 ]
 
-const drawerTitles: Record<ActiveTab, string> = {
-  overview: 'Portfolio Detail — All Accounts',
+const kpiDataFilter: Record<string, (row: OverviewDetailRow) => boolean> = {
+  'Total Accounts Monitored': () => true,
+  'At-Risk Accounts':         (r) => r.riskLevel === 'Critical' || r.riskLevel === 'High',
+  'Critical Risk Accounts':   (r) => r.riskLevel === 'Critical',
+  'Predicted Missed Payment':  (r) => r.status === 'Has Missed Payments',
+}
+
+const kpiActionFilter: Record<string, (row: ActionDetailRow) => boolean> = {
+  'Pending Approvals':         (r) => r.approvalStatus === 'Pending',
+  'Critical Due Today':        (r) => r.riskLevel === 'Critical',
+  'Acceptance Rate':           (r) => r.approvalStatus === 'Approved' || r.approvalStatus === 'Auto-Approved',
+  'Auto-Approval Eligible':    (r) => r.autoApprovalEligible === 'Yes',
+}
+
+const kpiOutcomeFilter: Record<string, (row: OutcomeDetailRow) => boolean> = {
+  'Cure Rate':                  (r) => r.cureFlag === 'Yes',
+  'Cure Rate Lift vs Control':  (r) => r.controlGroup === 'No' && r.cureFlag === 'Yes',
+  'Cost-to-Collect':            () => true,
+  'Recovered Amount':           (r) => r.paymentOutcome === 'Cured',
+}
+
+const drawerTitles: Record<ActiveTab, string> = {  overview: 'Portfolio Detail — All Accounts',
   action:   'Action Queue Detail',
   outcome:  'Outcome Records Detail',
 }
@@ -137,6 +158,7 @@ const drawerTitles: Record<ActiveTab, string> = {
 export function DashboardPage() {
   const [activeTab, setActiveTab] = useState<ActiveTab>('overview')
   const [detailOpen, setDetailOpen] = useState(false)
+  const [filtersOpen, setFiltersOpen] = useState(false)
   const [activeFilter, setActiveFilter] = useState<{ label: string; value: string } | undefined>(undefined)
   const [chartFilters, setChartFilters] = useState<{ label: string; value: string }[]>([])
 
@@ -179,14 +201,15 @@ export function DashboardPage() {
 
   function renderModal() {
     if (activeTab === 'overview') {
+      const filterFn = activeFilter ? (kpiDataFilter[activeFilter.label] ?? (() => true)) : () => true
       return (
         <DetailModal<OverviewDetailRow>
           open={detailOpen}
           onClose={handleDetailClose}
-          title={drawerTitles.overview}
+          title={activeFilter ? `Portfolio Detail — ${activeFilter.label}` : drawerTitles.overview}
           subtitle="All monitored accounts with risk and status data"
           columns={overviewColumns}
-          data={overviewData}
+          data={overviewData.filter(filterFn)}
           activeFilter={activeFilter}
           onClearFilter={handleClearFilter}
           exportFilename="portfolio-detail"
@@ -194,28 +217,30 @@ export function DashboardPage() {
       )
     }
     if (activeTab === 'action') {
+      const filterFn = activeFilter ? (kpiActionFilter[activeFilter.label] ?? (() => true)) : () => true
       return (
         <DetailModal<ActionDetailRow>
           open={detailOpen}
           onClose={handleDetailClose}
-          title={drawerTitles.action}
+          title={activeFilter ? `Action Detail — ${activeFilter.label}` : drawerTitles.action}
           subtitle="Pending and completed treatment actions"
           columns={actionColumns}
-          data={actionData}
+          data={actionData.filter(filterFn)}
           activeFilter={activeFilter}
           onClearFilter={handleClearFilter}
           exportFilename="action-queue-detail"
         />
       )
     }
+    const filterFn = activeFilter ? (kpiOutcomeFilter[activeFilter.label] ?? (() => true)) : () => true
     return (
       <DetailModal<OutcomeDetailRow>
         open={detailOpen}
         onClose={handleDetailClose}
-        title={drawerTitles.outcome}
+        title={activeFilter ? `Outcome Detail — ${activeFilter.label}` : drawerTitles.outcome}
         subtitle="Treatment outcomes and recovery data"
         columns={outcomeColumns}
-        data={outcomeData}
+        data={outcomeData.filter(filterFn)}
         activeFilter={activeFilter}
         onClearFilter={handleClearFilter}
         exportFilename="outcome-detail"
@@ -225,33 +250,41 @@ export function DashboardPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Global Filters */}
-      <GlobalFilters />
+      <Collapsible open={filtersOpen} onOpenChange={setFiltersOpen}>
+        {/* Tabs */}
+        <Tabs
+          value={activeTab}
+          onValueChange={(v) => { setActiveTab(v as ActiveTab); setChartFilters([]) }}
+          className="w-full"
+        >
+          {/* Toolbar row: [Filters] [tabs…] ————— [chips] ————— [Detail] */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <FiltersTrigger open={filtersOpen} />
+            <TabsList>
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="action">Action</TabsTrigger>
+              <TabsTrigger value="outcome">Outcome</TabsTrigger>
+            </TabsList>
+            <div className="flex-1 flex items-center gap-1.5 flex-wrap">
+              {!filtersOpen && <FilterChips />}
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleDetailOpen}
+              className="flex items-center gap-1.5 ml-auto"
+            >
+              <TableIcon className="h-4 w-4" />
+              Detail
+            </Button>
+          </div>
 
-      {/* Tabs */}
-      <Tabs
-        value={activeTab}
-        onValueChange={(v) => { setActiveTab(v as ActiveTab); setChartFilters([]) }}
-        className="w-full"
-      >
-        {/* Tab bar with Detail button */}
-        <div className="flex items-center justify-between gap-2 flex-wrap">
-          <TabsList>
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="action">Action</TabsTrigger>
-            <TabsTrigger value="outcome">Outcome</TabsTrigger>
-          </TabsList>
-
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleDetailOpen}
-            className="flex items-center gap-1.5"
-          >
-            <TableIcon className="h-4 w-4" />
-            Detail
-          </Button>
-        </div>
+          {/* Filter panel — full width below toolbar */}
+          <CollapsibleContent>
+            <div className="mt-2">
+              <FiltersPanel />
+            </div>
+          </CollapsibleContent>
 
         {/* Chart filter chips */}
         {chartFilters.length > 0 && (
@@ -307,6 +340,7 @@ export function DashboardPage() {
           />
         </TabsContent>
       </Tabs>
+      </Collapsible>
 
       {/* Detail Modal */}
       {renderModal()}
