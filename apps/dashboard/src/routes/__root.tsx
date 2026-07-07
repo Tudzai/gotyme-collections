@@ -5,6 +5,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage } from '@/co
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { AppSidebar } from '../components/app-sidebar'
 import { useRouterState } from '@tanstack/react-router'
+import { FilterProvider } from '../context/filter-context'
 
 const pageLabels: Record<string, string> = {
   '/': 'Dashboard',
@@ -19,27 +20,29 @@ function RootLayout() {
   const label = pageLabels[pathKey] ?? 'Account Detail'
 
   return (
-    <TooltipProvider>
-      <SidebarProvider>
-        <AppSidebar />
-        <SidebarInset>
-          <header className="flex h-14 shrink-0 items-center gap-2 border-b px-4">
-            <SidebarTrigger className="-ml-1" />
-            <Separator orientation="vertical" className="mr-2 h-4" />
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem>
-                  <BreadcrumbPage>{label}</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
-          </header>
-          <main className="flex-1 overflow-auto p-6">
-            <Outlet />
-          </main>
-        </SidebarInset>
-      </SidebarProvider>
-    </TooltipProvider>
+    <FilterProvider>
+      <TooltipProvider>
+        <SidebarProvider>
+          <AppSidebar />
+          <SidebarInset>
+            <header className="flex h-14 shrink-0 items-center gap-2 border-b px-4">
+              <SidebarTrigger className="-ml-1" />
+              <Separator orientation="vertical" className="mr-2 h-4" />
+              <Breadcrumb>
+                <BreadcrumbList>
+                  <BreadcrumbItem>
+                    <BreadcrumbPage>{label}</BreadcrumbPage>
+                  </BreadcrumbItem>
+                </BreadcrumbList>
+              </Breadcrumb>
+            </header>
+            <main className="flex-1 overflow-auto p-6">
+              <Outlet />
+            </main>
+          </SidebarInset>
+        </SidebarProvider>
+      </TooltipProvider>
+    </FilterProvider>
   )
 }
 

@@ -1,5 +1,6 @@
-import { LayoutDashboard, Wallet, ClipboardCheck, TrendingUp } from 'lucide-react'
+import { LayoutDashboard, Wallet, ClipboardCheck, Settings } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
+import { useRouterState } from '@tanstack/react-router'
 import {
   Sidebar,
   SidebarContent,
@@ -18,10 +19,13 @@ const navItems = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/portfolio', label: 'Portfolio', icon: Wallet },
   { to: '/approvals', label: 'Approvals', icon: ClipboardCheck },
-  { to: '/outcomes', label: 'Outcomes', icon: TrendingUp },
+  { to: '/settings', label: 'Settings', icon: Settings },
 ] as const
 
 export function AppSidebar() {
+  const { location } = useRouterState()
+  const currentPath = '/' + location.pathname.split('/')[1]
+
   return (
     <Sidebar>
       <SidebarHeader className="p-4">
@@ -42,7 +46,10 @@ export function AppSidebar() {
             <SidebarMenu>
               {navItems.map((item) => (
                 <SidebarMenuItem key={item.to}>
-                  <SidebarMenuButton render={<Link to={item.to} />}>
+                  <SidebarMenuButton
+                    isActive={item.to === currentPath}
+                    render={<Link to={item.to} />}
+                  >
                     <item.icon className="h-4 w-4" />
                     <span>{item.label}</span>
                   </SidebarMenuButton>

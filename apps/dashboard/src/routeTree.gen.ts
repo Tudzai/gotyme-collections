@@ -9,20 +9,20 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
-import { Route as OutcomesRouteImport } from './routes/outcomes'
 import { Route as ApprovalsRouteImport } from './routes/approvals'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PortfolioAccountIdRouteImport } from './routes/portfolio.$accountId'
 
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PortfolioRoute = PortfolioRouteImport.update({
   id: '/portfolio',
   path: '/portfolio',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const OutcomesRoute = OutcomesRouteImport.update({
-  id: '/outcomes',
-  path: '/outcomes',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApprovalsRoute = ApprovalsRouteImport.update({
@@ -44,61 +44,61 @@ const PortfolioAccountIdRoute = PortfolioAccountIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/approvals': typeof ApprovalsRoute
-  '/outcomes': typeof OutcomesRoute
   '/portfolio': typeof PortfolioRouteWithChildren
+  '/settings': typeof SettingsRoute
   '/portfolio/$accountId': typeof PortfolioAccountIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/approvals': typeof ApprovalsRoute
-  '/outcomes': typeof OutcomesRoute
   '/portfolio': typeof PortfolioRouteWithChildren
+  '/settings': typeof SettingsRoute
   '/portfolio/$accountId': typeof PortfolioAccountIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/approvals': typeof ApprovalsRoute
-  '/outcomes': typeof OutcomesRoute
   '/portfolio': typeof PortfolioRouteWithChildren
+  '/settings': typeof SettingsRoute
   '/portfolio/$accountId': typeof PortfolioAccountIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/approvals' | '/outcomes' | '/portfolio' | '/portfolio/$accountId'
+    '/' | '/approvals' | '/portfolio' | '/settings' | '/portfolio/$accountId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/approvals' | '/outcomes' | '/portfolio' | '/portfolio/$accountId'
+  to: '/' | '/approvals' | '/portfolio' | '/settings' | '/portfolio/$accountId'
   id:
     | '__root__'
     | '/'
     | '/approvals'
-    | '/outcomes'
     | '/portfolio'
+    | '/settings'
     | '/portfolio/$accountId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ApprovalsRoute: typeof ApprovalsRoute
-  OutcomesRoute: typeof OutcomesRoute
   PortfolioRoute: typeof PortfolioRouteWithChildren
+  SettingsRoute: typeof SettingsRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/portfolio': {
       id: '/portfolio'
       path: '/portfolio'
       fullPath: '/portfolio'
       preLoaderRoute: typeof PortfolioRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/outcomes': {
-      id: '/outcomes'
-      path: '/outcomes'
-      fullPath: '/outcomes'
-      preLoaderRoute: typeof OutcomesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/approvals': {
@@ -140,8 +140,8 @@ const PortfolioRouteWithChildren = PortfolioRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ApprovalsRoute: ApprovalsRoute,
-  OutcomesRoute: OutcomesRoute,
   PortfolioRoute: PortfolioRouteWithChildren,
+  SettingsRoute: SettingsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
