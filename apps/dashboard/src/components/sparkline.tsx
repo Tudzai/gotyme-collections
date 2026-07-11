@@ -105,7 +105,7 @@ export function Sparkline({
                 const { index } = props
                 if (index === 0) return <StartDot key={`start-${index}`} {...props} />
                 if (index === data.length - 1) return <EndDot key={`end-${index}`} {...props} color={color} dataLength={data.length} />
-                return <Dot key={`dot-${index}`} {...props} r={0} fill="transparent" />
+                return <Dot key={`dot-${index}`} cx={props.cx} cy={props.cy} r={0} fill="transparent" />
               }
             : false
           }

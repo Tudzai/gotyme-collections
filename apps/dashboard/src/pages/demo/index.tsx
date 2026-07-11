@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { demoAccounts } from './data'
-import type { ApprovalStatus, DemoAccount } from './data'
+import type { ApprovalStatus } from './data'
 import { PortfolioView } from './portfolio-view'
 import { RiskExplanationModal } from './customer-detail'
 import { TreatmentModal } from './customer-detail'

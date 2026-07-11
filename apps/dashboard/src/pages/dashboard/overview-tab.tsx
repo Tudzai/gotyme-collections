@@ -332,10 +332,10 @@ export function OverviewTab({ onKpiClick, onChartClick }: OverviewTabProps) {
                   radius={4}
                   cursor="pointer"
                   onClick={(data) =>
-                    onChartClick({ label: "Risk Level", value: (data as { band: string }).band })
+                    onChartClick({ label: "Risk Level", value: (data as unknown as { band: string }).band })
                   }
                 >
-                  {riskDistribution.map((entry, index) => {
+                  {riskDistribution.map((_, index) => {
                     const colors = [
                       "#ef4444",
                       "#f97316",
@@ -414,7 +414,7 @@ export function OverviewTab({ onKpiClick, onChartClick }: OverviewTabProps) {
                   radius={4}
                   cursor="pointer"
                   onClick={(data) =>
-                    onChartClick({ label: "Product", value: (data as { product: string }).product })
+                    onChartClick({ label: "Product", value: (data as unknown as { product: string }).product })
                   }
                 />
               </BarChart>
@@ -447,7 +447,7 @@ export function OverviewTab({ onKpiClick, onChartClick }: OverviewTabProps) {
                   radius={4}
                   cursor="pointer"
                   onClick={(data) =>
-                    onChartClick({ label: "Risk Driver", value: (data as { factor: string }).factor })
+                    onChartClick({ label: "Risk Driver", value: (data as unknown as { factor: string }).factor })
                   }
                 />
               </BarChart>

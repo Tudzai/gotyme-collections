@@ -204,7 +204,7 @@ export function FiltersPanel() {
         </FilterField>
 
         <FilterField label="Owner">
-          <Select value={filters.owner ?? 'all'} onValueChange={(v) => setFilter('owner', v)}>
+          <Select value={filters.owner ?? 'all'} onValueChange={(v) => setFilter('owner', v ?? 'all')}>
             <SelectTrigger className="w-[120px] h-8 text-xs"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Owners</SelectItem>

@@ -291,7 +291,7 @@ export function DataTable<T extends Record<string, unknown>>({
                 <TableHead className="w-10 px-3">
                   <Checkbox
                     checked={
-                      allPageSelected ? true : somePageSelected ? "indeterminate" : false
+                      allPageSelected ? true : somePageSelected ? ("indeterminate" as unknown as boolean) : false
                     }
                     onCheckedChange={toggleSelectAll}
                     aria-label="Select all on this page"

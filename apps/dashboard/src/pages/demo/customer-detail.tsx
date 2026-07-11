@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import type { DemoAccount } from './data'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -8,7 +8,6 @@ import {
   PhoneCall, Mail, Smartphone, Users, Send,
 } from 'lucide-react'
 import { RiskBadge } from '../../components/risk-badge'
-import type { DemoAccount, ApprovalStatus } from './data'
 
 // ---------------------------------------------------------------------------
 // Helpers

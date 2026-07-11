@@ -46,12 +46,6 @@ function getRecommendedChannel(accountId: string): Channel | null {
   return rec ? rec.channel : null
 }
 
-function getTreatmentStatus(accountId: string): string {
-  const rec = recommendations.find(r => r.accountId === accountId)
-  if (!rec) return "no-action"
-  return rec.status
-}
-
 function dueColor(days: number): string {
   if (days <= 7) return "text-red-600 font-semibold"
   if (days <= 14) return "text-orange-600 font-medium"
@@ -255,7 +249,7 @@ export function PortfolioPage({ onViewAccount }: PortfolioPageProps) {
           <div className="mt-2 flex flex-wrap items-end gap-3 p-3 border rounded-lg bg-muted/30">
             <div className="flex flex-col gap-1">
               <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Treatment Status</span>
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v ?? 'all')}>
                 <SelectTrigger className="w-[160px] h-8 text-xs">
                   <SelectValue />
                 </SelectTrigger>
@@ -273,7 +267,7 @@ export function PortfolioPage({ onViewAccount }: PortfolioPageProps) {
 
             <div className="flex flex-col gap-1">
               <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Owner</span>
-              <Select value={ownerFilter} onValueChange={setOwnerFilter}>
+              <Select value={ownerFilter} onValueChange={(v) => setOwnerFilter(v ?? 'all')}>
                 <SelectTrigger className="w-[140px] h-8 text-xs">
                   <SelectValue />
                 </SelectTrigger>
@@ -299,9 +293,9 @@ export function PortfolioPage({ onViewAccount }: PortfolioPageProps) {
       {/* Table */}
       <div className="overflow-x-auto rounded-md border">
         <div className="min-w-[900px]">
-          <DataTable<EnrichedAccount>
-            columns={columns}
-            data={enrichedAccounts}
+          <DataTable<Record<string, unknown>>
+            columns={columns as unknown as ColumnDef<Record<string, unknown>>[]}
+            data={enrichedAccounts as unknown as Record<string, unknown>[]}
             searchable={false}
             stickyHeader
             pageSize={25}
@@ -309,7 +303,7 @@ export function PortfolioPage({ onViewAccount }: PortfolioPageProps) {
             rowExpansion={row => (
               <div className="space-y-2 py-1">
                 <p className="text-sm font-medium text-muted-foreground">Risk Drivers</p>
-                <RiskDriverList drivers={row.riskDrivers} />
+                <RiskDriverList drivers={row.riskDrivers as import('../data/types').RiskDriver[]} />
               </div>
             )}
           />

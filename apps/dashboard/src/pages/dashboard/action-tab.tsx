@@ -29,7 +29,7 @@ import {
 } from "recharts"
 import { KpiCard } from "../../components/kpi-card"
 import { RiskBadge } from "../../components/risk-badge"
-import type { KpiData, ActionItem, ApprovalStatus, Channel } from "../../data/types"
+import type { KpiData, ActionItem, Channel } from "../../data/types"
 
 // ─── Local mock data ────────────────────────────────────────────────────────
 
@@ -297,14 +297,6 @@ const actionStatusConfig: Record<ActionItem["actionStatus"], { label: string; cl
   overdue:     { label: "Overdue",     className: "bg-destructive/10 text-destructive border-destructive/20" },
 }
 
-const approvalStatusConfig: Record<ApprovalStatus, { label: string; className: string }> = {
-  pending:       { label: "Pending",        className: "bg-blue-500/10 text-blue-600 border-blue-500/20"          },
-  approved:      { label: "Approved",       className: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" },
-  rejected:      { label: "Rejected",       className: "bg-destructive/10 text-destructive border-destructive/20" },
-  escalated:     { label: "Escalated",      className: "bg-orange-500/10 text-orange-600 border-orange-500/20"    },
-  "auto-approved":{ label: "Auto-Approved", className: "bg-purple-500/10 text-purple-600 border-purple-500/20"    },
-}
-
 const channelLabels: Record<Channel, string> = {
   sms:      "SMS",
   email:    "Email",
@@ -461,7 +453,7 @@ export function ActionTab({ onKpiClick, onChartClick }: ActionTabProps) {
                 ))}
               </Pie>
               <Tooltip
-                formatter={(value: number, name: string) => [value, name]}
+                formatter={(value: unknown, name: unknown) => [String(value), String(name)] as [string, string]}
                 contentStyle={{ fontSize: 11 }}
               />
               <Legend

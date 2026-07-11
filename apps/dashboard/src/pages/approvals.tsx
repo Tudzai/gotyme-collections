@@ -100,47 +100,6 @@ function formatBalance(n: number) {
 }
 
 // ---------------------------------------------------------------------------
-// Row expansion panel
-// ---------------------------------------------------------------------------
-
-function ExpansionPanel({ rec }: { rec: Recommendation }) {
-  return (
-    <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr]">
-      {/* Draft Message */}
-      <div className="space-y-1.5">
-        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Draft Message</p>
-        <div className="rounded-lg bg-muted/60 px-3 py-2.5 text-sm leading-relaxed whitespace-pre-wrap border border-border/40">
-          {rec.draftMessage}
-        </div>
-        {rec.reviewNotes && (
-          <p className="text-xs text-muted-foreground italic mt-1">
-            Note: {rec.reviewNotes}
-          </p>
-        )}
-      </div>
-
-      {/* Rationale + Risk Drivers */}
-      <div className="space-y-3">
-        <div className="space-y-1.5">
-          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Rationale</p>
-          <p className="text-sm text-foreground/80 leading-relaxed">{rec.rationale}</p>
-        </div>
-        <div className="space-y-1.5">
-          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Risk Drivers</p>
-          <RiskDriverList drivers={rec.account.riskDrivers} />
-        </div>
-      </div>
-
-      {/* Treatment History */}
-      <div className="space-y-1.5">
-        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Treatment History</p>
-        <TreatmentTimeline treatments={rec.account.treatmentHistory} />
-      </div>
-    </div>
-  )
-}
-
-// ---------------------------------------------------------------------------
 // Main component
 // ---------------------------------------------------------------------------
 
@@ -594,7 +553,7 @@ export function ApprovalsPage() {
       <div className="min-h-0 overflow-x-auto">
         <div className="min-w-[900px]">
           <DataTable
-            columns={columns}
+            columns={columns as unknown as ColumnDef<Record<string, unknown>>[]}
             data={tabRows as unknown as Record<string, unknown>[]}
             searchable
             searchPlaceholder="Search by customer, account, product…"
@@ -662,10 +621,10 @@ export function ApprovalsPage() {
                     <span className="text-xs text-muted-foreground">Tone</span>
                     <span className="font-medium capitalize">{detailRec.messageTone}</span>
                   </div>
-                  {detailRec.treatmentType && (
+                  {(detailRec as Recommendation & { treatmentType?: string }).treatmentType && (
                     <div className="flex flex-col gap-0.5">
                       <span className="text-xs text-muted-foreground">Type</span>
-                      <span className="font-medium capitalize">{detailRec.treatmentType}</span>
+                      <span className="font-medium capitalize">{(detailRec as Recommendation & { treatmentType?: string }).treatmentType}</span>
                     </div>
                   )}
                   {detailRec.owner && (

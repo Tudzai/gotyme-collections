@@ -23,6 +23,7 @@ import {
   Legend,
 } from "recharts"
 import type { KpiData } from "../../data/types"
+import type { LucideIcon } from "lucide-react"
 
 // ---------------------------------------------------------------------------
 // Props
@@ -72,7 +73,7 @@ const kpiSparkData = {
 // KPI definitions
 // ---------------------------------------------------------------------------
 
-const kpis: { title: string; kpi: KpiData; icon: React.ComponentType<{ className?: string }>; favorable: "up" | "down"; clickValue: string }[] = [
+const kpis: { title: string; kpi: KpiData; icon: LucideIcon; favorable: "up" | "down"; clickValue: string }[] = [
   {
     title: "Cure Rate",
     kpi: { value: "42%", mom: 8.4, yoy: 15.2, status: "positive", spark: kpiSparkData.cureRate },
@@ -326,7 +327,7 @@ export function OutcomeTab({ onKpiClick, onChartClick }: OutcomeTabProps) {
                   <LabelList
                     dataKey="cureRate"
                     position="top"
-                    formatter={(v: number) => `${v}%`}
+                    formatter={(v: unknown) => `${v}%`}
                     style={{ fontSize: 11, fill: "var(--muted-foreground)" }}
                   />
                 </Bar>
@@ -448,7 +449,7 @@ export function OutcomeTab({ onKpiClick, onChartClick }: OutcomeTabProps) {
                   <LabelList
                     dataKey="rate"
                     position="top"
-                    formatter={(v: number) => `${v}%`}
+                    formatter={(v: unknown) => `${v}%`}
                     style={{ fontSize: 11, fill: "var(--muted-foreground)" }}
                   />
                 </Bar>
@@ -501,7 +502,7 @@ export function OutcomeTab({ onKpiClick, onChartClick }: OutcomeTabProps) {
                   <LabelList
                     dataKey="value"
                     position="right"
-                    formatter={(v: number) => `${v}%`}
+                    formatter={(v: unknown) => `${v}%`}
                     style={{ fontSize: 11, fill: "var(--muted-foreground)" }}
                   />
                 </Bar>

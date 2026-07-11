@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Separator } from '@/components/ui/separator'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
 } from 'recharts'
@@ -104,7 +103,7 @@ function ChannelEffectivenessChart() {
             tickFormatter={v => `${v}%`}
           />
           <Tooltip
-            formatter={(v: number) => [`${v}%`, 'Cure Rate']}
+            formatter={(v: unknown) => [`${v}%`, 'Cure Rate']}
             contentStyle={{ fontSize: 12 }}
           />
           <Bar dataKey="cureRate" radius={[4, 4, 0, 0]}>

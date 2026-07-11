@@ -21,7 +21,7 @@ function formatPHP(n: number): string {
   return `$${n.toLocaleString()}`
 }
 
-function formatDueDate(daysUntilDue: number, dueDate: string): string {
+function formatDueDate(_daysUntilDue: number, dueDate: string): string {
   const d = new Date(dueDate)
   return d.toLocaleDateString('en-PH', { month: 'short', day: 'numeric' })
 }

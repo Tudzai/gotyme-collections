@@ -563,7 +563,7 @@ const PERMISSIONS: Permission[] = [
   "Manage Roles",
 ]
 
-function GovernanceTab({ roleCan, currentRole }: { roleCan: RoleCanFn; currentRole: string }) {
+function GovernanceTab({ roleCan: _roleCan, currentRole }: { roleCan: RoleCanFn; currentRole: string }) {
   const [makerCheckerEnabled, setMakerCheckerEnabled] = useState(true)
   const isAdmin = currentRole === "admin"
 
