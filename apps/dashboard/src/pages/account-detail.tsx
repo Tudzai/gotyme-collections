@@ -68,7 +68,7 @@ export function AccountDetailPage({ accountId, onBack }: AccountDetailPageProps)
                   <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                     <DollarSign className="h-3.5 w-3.5" /> Outstanding
                   </div>
-                  <p className="text-sm font-medium">₱{account.outstandingBalance.toLocaleString()}</p>
+                  <p className="text-sm font-medium">${account.outstandingBalance.toLocaleString()}</p>
                 </div>
                 <div className="space-y-1">
                   <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
@@ -80,7 +80,7 @@ export function AccountDetailPage({ accountId, onBack }: AccountDetailPageProps)
                   <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                     <DollarSign className="h-3.5 w-3.5" /> Monthly Payment
                   </div>
-                  <p className="text-sm font-medium">₱{account.monthlyPayment.toLocaleString()}</p>
+                  <p className="text-sm font-medium">${account.monthlyPayment.toLocaleString()}</p>
                 </div>
               </div>
             </CardContent>

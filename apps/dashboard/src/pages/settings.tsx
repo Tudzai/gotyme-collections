@@ -354,7 +354,7 @@ const EXCLUSION_OPTIONS = [
   "Complaint Open",
   "Fraud Investigation",
   "Critical Risk",
-  "Balance > ₱100K",
+  "Balance > $100K",
   "Custom Message",
 ]
 
@@ -426,7 +426,7 @@ function AutoApprovalTab({ roleCan }: { roleCan: RoleCanFn }) {
               </p>
             </div>
             <div className="space-y-1.5">
-              <Label className="text-sm">Maximum Outstanding Balance (₱)</Label>
+              <Label className="text-sm">Maximum Outstanding Balance ($)</Label>
               <Input
                 type="number"
                 value={rule.maxBalance}
@@ -437,7 +437,7 @@ function AutoApprovalTab({ roleCan }: { roleCan: RoleCanFn }) {
                 className="h-9 text-sm"
               />
               <p className="text-xs text-muted-foreground">
-                Accounts above ₱{rule.maxBalance.toLocaleString()} require manual approval.
+                Accounts above ${rule.maxBalance.toLocaleString()} require manual approval.
               </p>
             </div>
           </CardContent>

@@ -32,13 +32,13 @@ import { useApproval } from "../context/approval-context"
 // ---------------------------------------------------------------------------
 
 function formatPHP(value: number): string {
-  if (value >= 1_000_000) return `₱${(value / 1_000_000).toFixed(1)}M`
-  if (value >= 1_000) return `₱${(value / 1_000).toFixed(0)}K`
-  return `₱${value.toLocaleString()}`
+  if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(1)}M`
+  if (value >= 1_000) return `$${(value / 1_000).toFixed(0)}K`
+  return `$${value.toLocaleString()}`
 }
 
 function formatPHPFull(value: number): string {
-  return `₱${value.toLocaleString()}`
+  return `$${value.toLocaleString()}`
 }
 
 function getRecommendedChannel(accountId: string): Channel | null {

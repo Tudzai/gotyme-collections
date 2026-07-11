@@ -58,7 +58,7 @@ const INITIAL_NOTIFICATIONS: Notification[] = [
     category: 'auto_approval_exception',
     severity: 'warning',
     title: 'Auto-Approval Skipped — High Balance',
-    body: '5 accounts skipped auto-approval due to outstanding balance exceeding ₱50,000 threshold.',
+    body: '5 accounts skipped auto-approval due to outstanding balance exceeding $50,000 threshold.',
     read: false,
     timestamp: '2026-07-07T06:45:00',
     link: '/approvals',

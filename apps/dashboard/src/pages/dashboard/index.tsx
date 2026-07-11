@@ -81,7 +81,7 @@ const outcomeColumns: DetailColDef<OutcomeDetailRow>[] = [
 // Data mappers
 // ---------------------------------------------------------------------------
 
-function formatCurrency(n: number): string { return `₱${n.toLocaleString()}` }
+function formatCurrency(n: number): string { return `$${n.toLocaleString()}` }
 function capitalize(s: string): string { return s.charAt(0).toUpperCase() + s.slice(1) }
 
 const overviewData: OverviewDetailRow[] = accounts.map(a => ({
@@ -112,18 +112,18 @@ const actionData: ActionDetailRow[] = [
 ]
 
 const outcomeData: OutcomeDetailRow[] = [
-  { customer: 'Maria Santos',      product: 'Personal Loan', channel: 'SMS',      paymentOutcome: 'Cured',       amountRecovered: formatCurrency(4520),  cost: '₱2.10',  cureFlag: 'Yes', daysToCure: '5',  controlGroup: 'No'  },
-  { customer: 'Jose Reyes',        product: 'Credit Card',   channel: 'Call',     paymentOutcome: 'No Response', amountRecovered: formatCurrency(0),     cost: '₱18.50', cureFlag: 'No',  daysToCure: '—',  controlGroup: 'No'  },
-  { customer: 'Carlos Dela Cruz',  product: 'Mortgage',      channel: 'SMS',      paymentOutcome: 'Cured',       amountRecovered: formatCurrency(18200), cost: '₱2.10',  cureFlag: 'Yes', daysToCure: '3',  controlGroup: 'No'  },
-  { customer: 'Isabella Ramos',    product: 'Credit Card',   channel: 'WhatsApp', paymentOutcome: 'Cured',       amountRecovered: formatCurrency(2060),  cost: '₱3.20',  cureFlag: 'Yes', daysToCure: '4',  controlGroup: 'No'  },
-  { customer: 'Miguel Torres',     product: 'Personal Loan', channel: 'Push',     paymentOutcome: 'Cured',       amountRecovered: formatCurrency(3560),  cost: '₱0.80',  cureFlag: 'Yes', daysToCure: '6',  controlGroup: 'No'  },
-  { customer: 'Lucia Fernandez',   product: 'Personal Loan', channel: 'Email',    paymentOutcome: 'Cured',       amountRecovered: formatCurrency(5670),  cost: '₱1.50',  cureFlag: 'Yes', daysToCure: '2',  controlGroup: 'No'  },
-  { customer: 'Rafael Mendoza',    product: 'Personal Loan', channel: 'Push',     paymentOutcome: 'Partial',     amountRecovered: formatCurrency(945),   cost: '₱0.80',  cureFlag: 'No',  daysToCure: '—',  controlGroup: 'Yes' },
-  { customer: 'Carmen Villanueva', product: 'Mortgage',      channel: 'Email',    paymentOutcome: 'Cured',       amountRecovered: formatCurrency(14200), cost: '₱1.50',  cureFlag: 'Yes', daysToCure: '7',  controlGroup: 'Yes' },
-  { customer: 'Patricia Lim',      product: 'Credit Card',   channel: 'Push',     paymentOutcome: 'Partial',     amountRecovered: formatCurrency(1682),  cost: '₱0.80',  cureFlag: 'No',  daysToCure: '—',  controlGroup: 'No'  },
-  { customer: 'Fernando Gomez',    product: 'Credit Card',   channel: 'WhatsApp', paymentOutcome: 'Cured',       amountRecovered: formatCurrency(4605),  cost: '₱3.20',  cureFlag: 'Yes', daysToCure: '8',  controlGroup: 'No'  },
-  { customer: 'Ana Garcia',        product: 'Personal Loan', channel: 'Push',     paymentOutcome: 'Cured',       amountRecovered: formatCurrency(2280),  cost: '₱0.80',  cureFlag: 'Yes', daysToCure: '9',  controlGroup: 'No'  },
-  { customer: 'Angela Rivera',     product: 'Personal Loan', channel: 'SMS',      paymentOutcome: 'Partial',     amountRecovered: formatCurrency(3920),  cost: '₱2.10',  cureFlag: 'No',  daysToCure: '—',  controlGroup: 'No'  },
+  { customer: 'Maria Santos',      product: 'Personal Loan', channel: 'SMS',      paymentOutcome: 'Cured',       amountRecovered: formatCurrency(4520),  cost: '$2.10',  cureFlag: 'Yes', daysToCure: '5',  controlGroup: 'No'  },
+  { customer: 'Jose Reyes',        product: 'Credit Card',   channel: 'Call',     paymentOutcome: 'No Response', amountRecovered: formatCurrency(0),     cost: '$18.50', cureFlag: 'No',  daysToCure: '—',  controlGroup: 'No'  },
+  { customer: 'Carlos Dela Cruz',  product: 'Mortgage',      channel: 'SMS',      paymentOutcome: 'Cured',       amountRecovered: formatCurrency(18200), cost: '$2.10',  cureFlag: 'Yes', daysToCure: '3',  controlGroup: 'No'  },
+  { customer: 'Isabella Ramos',    product: 'Credit Card',   channel: 'WhatsApp', paymentOutcome: 'Cured',       amountRecovered: formatCurrency(2060),  cost: '$3.20',  cureFlag: 'Yes', daysToCure: '4',  controlGroup: 'No'  },
+  { customer: 'Miguel Torres',     product: 'Personal Loan', channel: 'Push',     paymentOutcome: 'Cured',       amountRecovered: formatCurrency(3560),  cost: '$0.80',  cureFlag: 'Yes', daysToCure: '6',  controlGroup: 'No'  },
+  { customer: 'Lucia Fernandez',   product: 'Personal Loan', channel: 'Email',    paymentOutcome: 'Cured',       amountRecovered: formatCurrency(5670),  cost: '$1.50',  cureFlag: 'Yes', daysToCure: '2',  controlGroup: 'No'  },
+  { customer: 'Rafael Mendoza',    product: 'Personal Loan', channel: 'Push',     paymentOutcome: 'Partial',     amountRecovered: formatCurrency(945),   cost: '$0.80',  cureFlag: 'No',  daysToCure: '—',  controlGroup: 'Yes' },
+  { customer: 'Carmen Villanueva', product: 'Mortgage',      channel: 'Email',    paymentOutcome: 'Cured',       amountRecovered: formatCurrency(14200), cost: '$1.50',  cureFlag: 'Yes', daysToCure: '7',  controlGroup: 'Yes' },
+  { customer: 'Patricia Lim',      product: 'Credit Card',   channel: 'Push',     paymentOutcome: 'Partial',     amountRecovered: formatCurrency(1682),  cost: '$0.80',  cureFlag: 'No',  daysToCure: '—',  controlGroup: 'No'  },
+  { customer: 'Fernando Gomez',    product: 'Credit Card',   channel: 'WhatsApp', paymentOutcome: 'Cured',       amountRecovered: formatCurrency(4605),  cost: '$3.20',  cureFlag: 'Yes', daysToCure: '8',  controlGroup: 'No'  },
+  { customer: 'Ana Garcia',        product: 'Personal Loan', channel: 'Push',     paymentOutcome: 'Cured',       amountRecovered: formatCurrency(2280),  cost: '$0.80',  cureFlag: 'Yes', daysToCure: '9',  controlGroup: 'No'  },
+  { customer: 'Angela Rivera',     product: 'Personal Loan', channel: 'SMS',      paymentOutcome: 'Partial',     amountRecovered: formatCurrency(3920),  cost: '$2.10',  cureFlag: 'No',  daysToCure: '—',  controlGroup: 'No'  },
 ]
 
 const kpiDataFilter: Record<string, (row: OverviewDetailRow) => boolean> = {

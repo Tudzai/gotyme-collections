@@ -74,7 +74,7 @@ export function DashboardPage({ onNavigate, onViewAccount }: DashboardPageProps)
         />
         <KpiCard
           title="Cost-to-Collect"
-          value={`₱${portfolioMetrics.costToCollect}`}
+          value={`$${portfolioMetrics.costToCollect}`}
           subtitle="Per account avg"
           icon={TrendingDown}
           trend={{ value: "-23% vs baseline", positive: true }}
@@ -120,7 +120,7 @@ export function DashboardPage({ onNavigate, onViewAccount }: DashboardPageProps)
                   <div>
                     <p className="text-sm font-medium">{account.customerName}</p>
                     <p className="text-xs text-muted-foreground">
-                      {account.product} · ₱{account.monthlyPayment.toLocaleString()} due in {account.daysUntilDue}d
+                      {account.product} · ${account.monthlyPayment.toLocaleString()} due in {account.daysUntilDue}d
                     </p>
                   </div>
                   <RiskBadge level={account.riskLevel} score={account.riskScore} />

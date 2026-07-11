@@ -82,7 +82,7 @@ const kpis: { title: string; kpi: KpiData; icon: React.ComponentType<{ className
   },
   {
     title: "Amount Recovered",
-    kpi: { value: "₱2.8M", mom: 11.6, yoy: 34.5, status: "positive", spark: kpiSparkData.amountRecovered },
+    kpi: { value: "$2.8M", mom: 11.6, yoy: 34.5, status: "positive", spark: kpiSparkData.amountRecovered },
     icon: Banknote,
     favorable: "up",
     clickValue: "recovered_amount",
@@ -208,7 +208,7 @@ const earlyWarningConfig = {
 }
 
 const scatterConfig = {
-  x: { label: "Avg Cost (₱)" },
+  x: { label: "Avg Cost ($)" },
   y: { label: "Cure Rate (%)" },
 }
 
@@ -353,7 +353,7 @@ export function OutcomeTab({ onKpiClick, onChartClick }: OutcomeTabProps) {
                   type="number"
                   name="Avg Cost"
                   tick={{ fontSize: 11 }}
-                  label={{ value: "Avg Cost (₱)", position: "insideBottomRight", offset: -4, fontSize: 11 }}
+                  label={{ value: "Avg Cost ($)", position: "insideBottomRight", offset: -4, fontSize: 11 }}
                 />
                 <YAxis
                   dataKey="y"
@@ -372,7 +372,7 @@ export function OutcomeTab({ onKpiClick, onChartClick }: OutcomeTabProps) {
                     return (
                       <div className="rounded border bg-popover px-3 py-2 text-xs shadow-sm text-popover-foreground space-y-0.5">
                         <p className="font-semibold">{d.label}</p>
-                        <p>Avg Cost: ₱{d.x}</p>
+                        <p>Avg Cost: ${d.x}</p>
                         <p>Cure Rate: {d.y}%</p>
                         <p>Volume: {d.z}</p>
                       </div>

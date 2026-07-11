@@ -17,7 +17,7 @@ export function RiskDriverList({ drivers }: RiskDriverListProps) {
       {drivers.map((driver, i) => (
         <div key={i} className="flex items-start gap-3 rounded-lg border p-3">
           <Badge variant="outline" className={`mt-0.5 shrink-0 ${impactColors[driver.impact]}`}>
-            {driver.impact}
+            {driver.impact.charAt(0).toUpperCase() + driver.impact.slice(1)}
           </Badge>
           <div className="space-y-0.5">
             <p className="text-sm font-medium">{driver.factor}</p>

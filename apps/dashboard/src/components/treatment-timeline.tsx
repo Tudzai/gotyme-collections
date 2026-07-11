@@ -15,7 +15,7 @@ interface TreatmentTimelineProps {
 }
 
 export function TreatmentTimeline({ treatments }: TreatmentTimelineProps) {
-  if (treatments.length === 0) {
+  if (!treatments || treatments.length === 0) {
     return <p className="text-sm text-muted-foreground">No prior treatments</p>
   }
 

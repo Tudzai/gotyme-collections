@@ -3,6 +3,12 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -13,6 +19,7 @@ import {
   X,
   ArrowUp,
   Pencil,
+  Eye,
   UserPlus,
   Download,
   Zap,
@@ -64,10 +71,16 @@ function enrichRec(rec: Recommendation, idx: number): Recommendation {
   }
 }
 
+const PRIORITY_ORDER = { critical: 0, high: 1, medium: 2, low: 3 }
+
 const ALL_RECS: Recommendation[] = [
   ...recommendations,
   ...historicalRecommendations,
-].map(enrichRec)
+].map(enrichRec).sort((a, b) => {
+  const ap = PRIORITY_ORDER[(a.priority ?? "medium") as keyof typeof PRIORITY_ORDER] ?? 2
+  const bp = PRIORITY_ORDER[(b.priority ?? "medium") as keyof typeof PRIORITY_ORDER] ?? 2
+  return ap - bp
+})
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -80,9 +93,9 @@ function slaHoursRemaining(deadline?: string): number | null {
 }
 
 function formatBalance(n: number) {
-  if (n >= 1_000_000) return `₱${(n / 1_000_000).toFixed(1)}M`
-  if (n >= 1_000) return `₱${(n / 1_000).toFixed(0)}k`
-  return `₱${n}`
+  if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`
+  if (n >= 1_000) return `$${(n / 1_000).toFixed(0)}k`
+  return `$${n}`
 }
 
 // ---------------------------------------------------------------------------
@@ -133,22 +146,23 @@ function ExpansionPanel({ rec }: { rec: Recommendation }) {
 export function ApprovalsPage() {
   const [recs, setRecs] = useState<Recommendation[]>(ALL_RECS)
   const [selectedRows, setSelectedRows] = useState<Recommendation[]>([])
-  const [activeTab, setActiveTab] = useState<string>("pending")
+  const [activeTab, setActiveTab] = useState<string>("all")
   const [autoApproveNotice, setAutoApproveNotice] = useState<number | null>(null)
+  const [detailRec, setDetailRec] = useState<Recommendation | null>(null)
 
   // ---- Derived counts ----
   const counts = useMemo(() => ({
-    pending:        recs.filter((r) => r.status === "pending").length,
-    approved:       recs.filter((r) => r.status === "approved").length,
-    rejected:       recs.filter((r) => r.status === "rejected").length,
-    escalated:      recs.filter((r) => r.status === "escalated").length,
-    "auto-approved": recs.filter((r) => r.status === "auto-approved").length,
-    all:            recs.length,
+    critical: recs.filter((r) => r.priority === "critical").length,
+    high:     recs.filter((r) => r.priority === "high").length,
+    medium:   recs.filter((r) => r.priority === "medium").length,
+    low:      recs.filter((r) => r.priority === "low").length,
+    all:      recs.length,
+    pending:  recs.filter((r) => r.status === "pending").length,
   }), [recs])
 
   // ---- Filtered rows for current tab ----
   const tabRows = useMemo(
-    () => (activeTab === "all" ? recs : recs.filter((r) => r.status === activeTab)),
+    () => (activeTab === "all" ? recs : recs.filter((r) => r.priority === activeTab)),
     [recs, activeTab]
   )
 
@@ -303,9 +317,30 @@ export function ApprovalsPage() {
     },
     {
       key: "channel",
-      header: "Channel",
+      header: "Treatment",
       sortable: true,
-      render: (row) => <ChannelIcon channel={row.channel} showLabel />,
+      render: (row) => {
+        const isEscalated = row.status === "escalated" ||
+          (row.rationale?.toLowerCase().includes("escalat") && row.account.riskLevel === "critical")
+        if (isEscalated) {
+          const team = row.account.riskScore >= 85 ? "Legal Team" : "Collections Team"
+          return (
+            <div className="flex flex-col gap-0.5">
+              <span className="text-xs font-semibold text-orange-600">Escalate</span>
+              <span className="text-xs text-muted-foreground">{team}</span>
+            </div>
+          )
+        }
+        if (row.channel) {
+          return (
+            <div className="flex flex-col gap-0.5">
+              <span className="text-xs font-semibold text-blue-600">Reach Out</span>
+              <ChannelIcon channel={row.channel} showLabel />
+            </div>
+          )
+        }
+        return <span className="text-xs text-muted-foreground">No Action</span>
+      },
     },
     {
       key: "status",
@@ -344,50 +379,60 @@ export function ApprovalsPage() {
     {
       key: "actions",
       header: "",
-      className: "w-32",
-      render: (row) => {
-        if (row.status !== "pending") return null
-        return (
-          <div className="flex items-center gap-1">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-500/10"
-              onClick={(e) => { e.stopPropagation(); updateStatus(row.id, "approved") }}
-              title="Approve"
-            >
-              <Check className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10"
-              onClick={(e) => { e.stopPropagation(); updateStatus(row.id, "rejected") }}
-              title="Reject"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7 text-muted-foreground hover:text-foreground hover:bg-muted"
-              onClick={(e) => { e.stopPropagation() }}
-              title="Edit"
-            >
-              <Pencil className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7 text-orange-600 hover:text-orange-700 hover:bg-orange-500/10"
-              onClick={(e) => { e.stopPropagation(); updateStatus(row.id, "escalated") }}
-              title="Escalate"
-            >
-              <ArrowUp className="h-4 w-4" />
-            </Button>
-          </div>
-        )
-      },
+      className: "w-40",
+      render: (row) => (
+        <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7 text-muted-foreground hover:text-foreground hover:bg-muted"
+            onClick={(e) => { e.stopPropagation(); setDetailRec(row) }}
+            title="View details"
+          >
+            <Eye className="h-4 w-4" />
+          </Button>
+          {row.status === "pending" && (
+            <>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-500/10"
+                onClick={(e) => { e.stopPropagation(); updateStatus(row.id, "approved") }}
+                title="Approve"
+              >
+                <Check className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10"
+                onClick={(e) => { e.stopPropagation(); updateStatus(row.id, "rejected") }}
+                title="Reject"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 text-muted-foreground hover:text-foreground hover:bg-muted"
+                onClick={(e) => { e.stopPropagation() }}
+                title="Edit"
+              >
+                <Pencil className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 text-orange-600 hover:text-orange-700 hover:bg-orange-500/10"
+                onClick={(e) => { e.stopPropagation(); updateStatus(row.id, "escalated") }}
+                title="Escalate"
+              >
+                <ArrowUp className="h-4 w-4" />
+              </Button>
+            </>
+          )}
+        </div>
+      ),
     },
   ]
 
@@ -407,75 +452,51 @@ export function ApprovalsPage() {
       )}
 
       {/* KPI Mini-Cards */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {/* Pending */}
-        <div className="flex items-center gap-3 rounded-lg border bg-card px-4 py-3">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-500/10">
-            <Clock className="h-4 w-4 text-blue-600" />
-          </div>
-          <div>
-            <p className="text-2xl font-bold tabular-nums leading-none">{counts.pending}</p>
-            <p className="mt-0.5 text-xs text-muted-foreground">Pending Approvals</p>
-          </div>
-        </div>
-
-        {/* Auto-Approval Eligible */}
-        <div className="flex items-center gap-3 rounded-lg border bg-card px-4 py-3">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-violet-500/10">
-            <Zap className="h-4 w-4 text-violet-600" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <p className="text-2xl font-bold tabular-nums leading-none">
-                {recs.filter((r) => r.autoApprovalEligible && r.status === "pending").length}
-              </p>
-              <Button
-                size="sm"
-                variant="outline"
-                className="h-6 px-2 text-xs border-violet-500/30 text-violet-600 hover:bg-violet-500/10 hover:text-violet-700 shrink-0"
-                onClick={handleAutoApprove}
-              >
-                <Zap className="h-3 w-3 mr-1" />
-                Auto
-              </Button>
+        <div className="flex flex-col gap-3 rounded-xl border bg-card px-5 py-4 shadow-sm">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Pending Approvals</p>
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-500/10">
+              <Clock className="h-4 w-4 text-blue-600" />
             </div>
-            <p className="mt-0.5 text-xs text-muted-foreground">Auto-Approval Eligible</p>
           </div>
+          <p className="text-4xl font-bold tabular-nums leading-none text-blue-600">{counts.pending}</p>
         </div>
 
         {/* Critical Pending */}
-        <div className="flex items-center gap-3 rounded-lg border border-destructive/20 bg-destructive/5 px-4 py-3">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-destructive/10">
-            <AlertTriangle className="h-4 w-4 text-destructive" />
+        <div className="flex flex-col gap-3 rounded-xl border border-destructive/30 bg-destructive/5 px-5 py-4 shadow-sm">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Critical Pending</p>
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-destructive/10">
+              <AlertTriangle className="h-4 w-4 text-destructive" />
+            </div>
           </div>
-          <div>
-            <p className="text-2xl font-bold tabular-nums leading-none text-destructive">
-              {recs.filter((r) => r.priority === "critical" && r.status === "pending").length}
-            </p>
-            <p className="mt-0.5 text-xs text-muted-foreground">Critical Pending</p>
-          </div>
+          <p className="text-4xl font-bold tabular-nums leading-none text-destructive">
+            {recs.filter((r) => r.priority === "critical" && r.status === "pending").length}
+          </p>
         </div>
 
         {/* Acceptance Rate */}
-        <div className="flex items-center gap-3 rounded-lg border bg-card px-4 py-3">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-500/10">
-            <BarChart3 className="h-4 w-4 text-emerald-600" />
+        <div className="flex flex-col gap-3 rounded-xl border bg-card px-5 py-4 shadow-sm">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Acceptance Rate</p>
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-500/10">
+              <BarChart3 className="h-4 w-4 text-emerald-600" />
+            </div>
           </div>
-          <div>
-            <p className="text-2xl font-bold tabular-nums leading-none">79%</p>
-            <p className="mt-0.5 text-xs text-muted-foreground">Acceptance Rate</p>
-          </div>
+          <p className="text-4xl font-bold tabular-nums leading-none text-emerald-600">79%</p>
         </div>
 
         {/* Approved Today */}
-        <div className="flex items-center gap-3 rounded-lg border bg-card px-4 py-3">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-500/10">
-            <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+        <div className="flex flex-col gap-3 rounded-xl border bg-card px-5 py-4 shadow-sm">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Approved Today</p>
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-500/10">
+              <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+            </div>
           </div>
-          <div>
-            <p className="text-2xl font-bold tabular-nums leading-none">8</p>
-            <p className="mt-0.5 text-xs text-muted-foreground">Approved Today</p>
-          </div>
+          <p className="text-4xl font-bold tabular-nums leading-none text-emerald-600">8</p>
         </div>
       </div>
 
@@ -543,9 +564,9 @@ export function ApprovalsPage() {
       <div className="flex items-center justify-between gap-3">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="h-9">
-            {(["pending", "approved", "rejected", "escalated", "auto-approved", "all"] as const).map((tab) => (
+            {(["all", "critical", "high", "medium", "low"] as const).map((tab) => (
               <TabsTrigger key={tab} value={tab} className="flex items-center gap-1.5 px-3 text-xs capitalize">
-                {tab === "auto-approved" ? "Auto-Approved" : tab.charAt(0).toUpperCase() + tab.slice(1)}
+                {tab.charAt(0).toUpperCase() + tab.slice(1)}
                 <Badge
                   variant="secondary"
                   className="h-4 min-w-[18px] px-1 text-[10px] font-medium leading-none rounded-full"
@@ -581,12 +602,100 @@ export function ApprovalsPage() {
             onSelectionChange={(rows) => setSelectedRows(rows as unknown as Recommendation[])}
             stickyHeader
             exportFilename="approvals-queue"
-            rowExpansion={(row) => (
-              <ExpansionPanel rec={row as unknown as Recommendation} />
-            )}
           />
         </div>
       </div>
+
+      {/* Detail Dialog */}
+      <Dialog open={detailRec !== null} onOpenChange={(open) => { if (!open) setDetailRec(null) }}>
+        <DialogContent className="w-full max-w-5xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              {detailRec?.account.customerName}
+              <span className="text-sm font-normal text-muted-foreground font-mono">
+                {detailRec?.account.accountNumber}
+              </span>
+            </DialogTitle>
+          </DialogHeader>
+
+          {detailRec && (
+            <div className="flex flex-col gap-5 pt-1">
+
+              {/* Meta row */}
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="outline">{detailRec.account.product}</Badge>
+                <Badge variant="outline" className={STATUS_CONFIG[detailRec.status].className}>
+                  {STATUS_CONFIG[detailRec.status].label}
+                </Badge>
+                <ChannelIcon channel={detailRec.channel} showLabel />
+                <RiskBadge level={detailRec.account.riskLevel} />
+              </div>
+
+              {/* Draft Message */}
+              {detailRec.draftMessage && (
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1.5">Draft Message</p>
+                  <div className="rounded-md border bg-muted/40 px-4 py-3 text-sm whitespace-pre-wrap leading-relaxed">
+                    {detailRec.draftMessage}
+                  </div>
+                </div>
+              )}
+
+              {/* Rationale */}
+              {detailRec.rationale && (
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1.5">AI Rationale</p>
+                  <p className="text-sm text-foreground/80 leading-relaxed">{detailRec.rationale}</p>
+                </div>
+              )}
+
+              {/* Treatment */}
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1.5">Treatment</p>
+                <div className="flex flex-wrap gap-3 text-sm">
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-xs text-muted-foreground">Channel</span>
+                    <span className="font-medium capitalize">{detailRec.channel}</span>
+                  </div>
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-xs text-muted-foreground">Tone</span>
+                    <span className="font-medium capitalize">{detailRec.messageTone}</span>
+                  </div>
+                  {detailRec.treatmentType && (
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-xs text-muted-foreground">Type</span>
+                      <span className="font-medium capitalize">{detailRec.treatmentType}</span>
+                    </div>
+                  )}
+                  {detailRec.owner && (
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-xs text-muted-foreground">Owner</span>
+                      <span className="font-medium">{detailRec.owner}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Risk Drivers */}
+              {detailRec.account.riskDrivers?.length > 0 && (
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1.5">Risk Drivers</p>
+                  <RiskDriverList drivers={detailRec.account.riskDrivers} />
+                </div>
+              )}
+
+              {/* Treatment History */}
+              {detailRec.account.treatmentHistory?.length > 0 && (
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1.5">Treatment History</p>
+                  <TreatmentTimeline treatments={detailRec.account.treatmentHistory ?? []} />
+                </div>
+              )}
+
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

@@ -47,7 +47,7 @@ export const demoAccounts: DemoAccount[] = [
     topRiskDriver: 'Balance decline',
     treatment: 'sms',
     treatmentRationale: 'Alex responded to SMS reminders in the past. Low-cost channel with high response rate for medium-risk profiles.',
-    personalizedMessage: 'Hi Alex, your GoTyme loan payment of ₱3,200 is due in 10 days (Jul 21). We noticed some changes in your account — if you need support or flexible payment options, reply HELP and we\'ll connect you with a specialist. [GoTyme Collections]',
+    personalizedMessage: 'Hi Alex, your GoTyme loan payment of $3,200 is due in 10 days (Jul 21). We noticed some changes in your account — if you need support or flexible payment options, reply HELP and we\'ll connect you with a specialist. [GoTyme Collections]',
     defaultStatus: 'pending',
   },
 
@@ -65,7 +65,7 @@ export const demoAccounts: DemoAccount[] = [
     riskDrivers: [
       { factor: 'Repeated missed payments', description: '4 missed payments in last 6 months — increasing frequency.' },
       { factor: 'No response to outreach', description: '3 previous SMS and email attempts with zero engagement.' },
-      { factor: 'High outstanding balance', description: '₱185,000 outstanding — above threshold for automated outreach.' },
+      { factor: 'High outstanding balance', description: '$185,000 outstanding — above threshold for automated outreach.' },
       { factor: 'Cash advance pattern', description: '5 cash advances in past 30 days, indicating financial stress.' },
     ],
     topRiskDriver: 'Repeated missed payments',

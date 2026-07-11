@@ -273,7 +273,7 @@ export function DashboardView({ onGoToPortfolio }: DashboardViewProps) {
               />
               <StatCard
                 title="Cost-to-Collect"
-                value={`₱${out.costToCollect.toFixed(2)}`}
+                value={`$${out.costToCollect.toFixed(2)}`}
                 sub="Avg per account"
                 icon={<DollarSign className="h-5 w-5" />}
                 color="text-emerald-600"

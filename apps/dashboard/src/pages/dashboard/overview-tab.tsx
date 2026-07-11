@@ -78,7 +78,7 @@ const kpiSparkData = {
 // ---------------------------------------------------------------------------
 
 const totalDebtKpi: KpiData = {
-  value: "₱4.2M",
+  value: "$4.2M",
   mom: 2.5,
   yoy: 12.3,
   status: "warning",
@@ -86,7 +86,7 @@ const totalDebtKpi: KpiData = {
 }
 
 const atRiskDebtKpi: KpiData = {
-  value: "₱1.2M",
+  value: "$1.2M",
   mom: 9.1,
   yoy: 5.4,
   status: "negative",
@@ -220,7 +220,7 @@ const dueWindowConfig = {
 }
 
 const exposureConfig = {
-  exposureM: { label: "Exposure (₱M)" },
+  exposureM: { label: "Exposure ($M)" },
 }
 
 const driverConfig = {
@@ -401,12 +401,12 @@ export function OverviewTab({ onKpiClick, onChartClick }: OverviewTabProps) {
                 <YAxis
                   tickLine={false}
                   axisLine={false}
-                  tickFormatter={(v: number) => `₱${v}M`}
+                  tickFormatter={(v: number) => `$${v}M`}
                   className="text-xs"
                   width={52}
                 />
                 <ChartTooltip
-                  content={<ChartTooltipContent formatter={(value) => [`₱${value}M`, "Exposure"]} />}
+                  content={<ChartTooltipContent formatter={(value) => [`$${value}M`, "Exposure"]} />}
                 />
                 <Bar
                   dataKey="exposureM"
@@ -531,7 +531,7 @@ export function OverviewTab({ onKpiClick, onChartClick }: OverviewTabProps) {
                             {cell.count > 0 ? (
                               <>
                                 <div className="font-semibold">{cell.count}</div>
-                                <div className="opacity-75">₱{exposureM}M</div>
+                                <div className="opacity-75">${exposureM}M</div>
                               </>
                             ) : (
                               <div className="font-semibold">—</div>
