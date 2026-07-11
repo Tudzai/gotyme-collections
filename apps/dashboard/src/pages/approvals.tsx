@@ -60,11 +60,12 @@ const PRIORITY_CONFIG = {
 
 // Assign deterministic SLA, priority, autoApprovalEligible to recommendations that lack them
 function enrichRec(rec: Recommendation, idx: number): Recommendation {
-  const priorities = ["critical", "high", "medium", "low"] as const
   const slaHours = [2, 4, 6, 8, 12, 18, 24, 36, 48]
+  // When no explicit priority, derive from riskLevel but cap "critical" at "high"
+  const derivedPriority = rec.account.riskLevel === "critical" ? "high" : rec.account.riskLevel
   return {
     ...rec,
-    priority: rec.priority ?? priorities[idx % 4],
+    priority: rec.priority ?? derivedPriority,
     slaDeadline: rec.slaDeadline ?? new Date(Date.now() + slaHours[idx % slaHours.length] * 3_600_000).toISOString(),
     autoApprovalEligible: rec.autoApprovalEligible ?? (rec.account.riskLevel === "low" || rec.account.riskLevel === "medium"),
     owner: rec.owner ?? OWNERS[idx % OWNERS.length],
