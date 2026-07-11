@@ -25,6 +25,7 @@ import { ChannelIcon } from "../components/channel-icon"
 import { RiskDriverList } from "../components/risk-driver-list"
 import { accounts, recommendations } from "../data/mock-data"
 import type { Account, RiskLevel, Channel } from "../data/types"
+import { useApproval } from "../context/approval-context"
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -79,6 +80,13 @@ export function PortfolioPage({ onViewAccount }: PortfolioPageProps) {
   const [statusFilter, setStatusFilter] = useState<string>("all")
   const [ownerFilter, setOwnerFilter] = useState<string>("all")
   const [filtersOpen, setFiltersOpen] = useState(false)
+  const { overrides } = useApproval()
+
+  function getEffectiveTreatmentStatus(accountId: string): string {
+    const rec = recommendations.find(r => r.accountId === accountId)
+    if (!rec) return "no-action"
+    return overrides[rec.id] ?? rec.status
+  }
 
   const owners = useMemo(() => {
     const set = new Set(accounts.map(a => a.owner).filter(Boolean) as string[])
@@ -91,17 +99,17 @@ export function PortfolioPage({ onViewAccount }: PortfolioPageProps) {
         const q = search.toLowerCase()
         if (!a.customerName.toLowerCase().includes(q) && !a.accountNumber.toLowerCase().includes(q)) return false
       }
-      if (statusFilter !== "all" && getTreatmentStatus(a.id) !== statusFilter) return false
+      if (statusFilter !== "all" && getEffectiveTreatmentStatus(a.id) !== statusFilter) return false
       if (ownerFilter !== "all" && a.owner !== ownerFilter) return false
       return true
     })
-  }, [search, statusFilter, ownerFilter])
+  }, [search, statusFilter, ownerFilter, overrides])
 
   type EnrichedAccount = Account & { recommendedChannel: Channel | null; treatmentStatus: string }
 
   const enrichedAccounts: EnrichedAccount[] = useMemo(
-    () => filteredAccounts.map(a => ({ ...a, recommendedChannel: getRecommendedChannel(a.id), treatmentStatus: getTreatmentStatus(a.id) })),
-    [filteredAccounts]
+    () => filteredAccounts.map(a => ({ ...a, recommendedChannel: getRecommendedChannel(a.id), treatmentStatus: getEffectiveTreatmentStatus(a.id) })),
+    [filteredAccounts, overrides]
   )
 
   const totalExposure = accounts.filter(a => a.riskLevel === "critical" || a.riskLevel === "high").reduce((s, a) => s + a.outstandingBalance, 0)

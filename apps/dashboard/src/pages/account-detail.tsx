@@ -1,4 +1,5 @@
-import { ArrowLeft, Calendar, CreditCard, DollarSign } from "lucide-react"
+import { ArrowLeft, Calendar, CreditCard, DollarSign, CheckCircle, XCircle, ArrowUpRight } from "lucide-react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
@@ -9,6 +10,8 @@ import { ChannelIcon } from "../components/channel-icon"
 import { ApprovalActionBar } from "../components/approval-action-bar"
 import { Badge } from "@/components/ui/badge"
 import { accounts, recommendations } from "../data/mock-data"
+import { useApproval } from "../context/approval-context"
+import type { ApprovalStatus } from "../data/types"
 
 interface AccountDetailPageProps {
   accountId: string | null
@@ -18,6 +21,10 @@ interface AccountDetailPageProps {
 export function AccountDetailPage({ accountId, onBack }: AccountDetailPageProps) {
   const account = accounts.find((a) => a.id === accountId)
   const recommendation = recommendations.find((r) => r.accountId === accountId)
+  const { overrides, setApproval } = useApproval()
+
+  const effectiveStatus: ApprovalStatus =
+    recommendation ? (overrides[recommendation.id] ?? recommendation.status) : 'pending'
 
   if (!account) {
     return (
@@ -103,14 +110,31 @@ export function AccountDetailPage({ accountId, onBack }: AccountDetailPageProps)
         {/* Right Column */}
         <div className="space-y-6">
           {/* AI Recommendation */}
-          {recommendation && recommendation.status === "pending" ? (
+          {recommendation ? (
             <Card className="border-primary/20">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-base">AI Recommendation</CardTitle>
-                  <Badge variant="outline" className="bg-blue-500/10 text-blue-600 border-blue-500/20">
-                    Pending Review
-                  </Badge>
+                  {effectiveStatus === 'pending' && (
+                    <Badge variant="outline" className="bg-blue-500/10 text-blue-600 border-blue-500/20">
+                      Pending Review
+                    </Badge>
+                  )}
+                  {effectiveStatus === 'approved' && (
+                    <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200">
+                      <CheckCircle className="mr-1 h-3 w-3" /> Approved
+                    </Badge>
+                  )}
+                  {effectiveStatus === 'rejected' && (
+                    <Badge className="bg-red-100 text-red-700 border-red-200">
+                      <XCircle className="mr-1 h-3 w-3" /> Rejected
+                    </Badge>
+                  )}
+                  {effectiveStatus === 'escalated' && (
+                    <Badge className="bg-violet-100 text-violet-700 border-violet-200">
+                      <ArrowUpRight className="mr-1 h-3 w-3" /> Escalated
+                    </Badge>
+                  )}
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -145,12 +169,35 @@ export function AccountDetailPage({ accountId, onBack }: AccountDetailPageProps)
 
                 <Separator />
 
-                <ApprovalActionBar
-                  onApprove={() => {}}
-                  onReject={() => {}}
-                  onEdit={() => {}}
-                  onEscalate={() => {}}
-                />
+                {effectiveStatus === 'pending' && (
+                  <ApprovalActionBar
+                    onApprove={() => setApproval(recommendation.id, 'approved')}
+                    onReject={() => setApproval(recommendation.id, 'rejected')}
+                    onEdit={() => {}}
+                    onEscalate={() => setApproval(recommendation.id, 'escalated')}
+                  />
+                )}
+
+                {effectiveStatus === 'approved' && (
+                  <div className="flex items-center gap-2 p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-sm text-emerald-800">
+                    <CheckCircle className="h-4 w-4 text-emerald-600 flex-shrink-0" />
+                    Approved for outreach — message scheduled for delivery.
+                  </div>
+                )}
+
+                {effectiveStatus === 'rejected' && (
+                  <div className="flex items-center gap-2 p-3 rounded-lg bg-red-50 border border-red-200 text-sm text-red-800">
+                    <XCircle className="h-4 w-4 text-red-600 flex-shrink-0" />
+                    Recommendation rejected. No outreach will be sent.
+                  </div>
+                )}
+
+                {effectiveStatus === 'escalated' && (
+                  <div className="flex items-center gap-2 p-3 rounded-lg bg-violet-50 border border-violet-200 text-sm text-violet-800">
+                    <ArrowUpRight className="h-4 w-4 text-violet-600 flex-shrink-0" />
+                    Escalated to Human Collections Team. Automated outreach paused.
+                  </div>
+                )}
               </CardContent>
             </Card>
           ) : (

@@ -8,6 +8,7 @@ import { NotificationPanel } from '../components/notification-panel'
 import { FilterProvider } from '../context/filter-context'
 import { RoleProvider } from '../context/role-context'
 import { NotificationProvider } from '../context/notification-context'
+import { ApprovalProvider } from '../context/approval-context'
 
 const pageLabels: Record<string, string> = {
   '/': 'Dashboard',
@@ -52,23 +53,25 @@ function RootLayout() {
   }
 
   return (
-    <FilterProvider>
-      <RoleProvider>
-        <NotificationProvider>
-          <TooltipProvider>
-            <SidebarProvider style={{ '--sidebar-width': '160px' } as React.CSSProperties}>
-              <AppSidebar />
-              <SidebarInset className="min-w-0">
-                <HeaderContent />
-                <main className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden p-6">
-                  <Outlet />
-                </main>
-              </SidebarInset>
-            </SidebarProvider>
-          </TooltipProvider>
-        </NotificationProvider>
-      </RoleProvider>
-    </FilterProvider>
+    <ApprovalProvider>
+      <FilterProvider>
+        <RoleProvider>
+          <NotificationProvider>
+            <TooltipProvider>
+              <SidebarProvider style={{ '--sidebar-width': '160px' } as React.CSSProperties}>
+                <AppSidebar />
+                <SidebarInset className="min-w-0">
+                  <HeaderContent />
+                  <main className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden p-6">
+                    <Outlet />
+                  </main>
+                </SidebarInset>
+              </SidebarProvider>
+            </TooltipProvider>
+          </NotificationProvider>
+        </RoleProvider>
+      </FilterProvider>
+    </ApprovalProvider>
   )
 }
 
