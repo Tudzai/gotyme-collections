@@ -12,8 +12,10 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as ApprovalsRouteImport } from './routes/approvals'
+import { Route as DemoRouteImport } from './routes/_demo'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PortfolioAccountIdRouteImport } from './routes/portfolio.$accountId'
+import { Route as DemoDemoRouteImport } from './routes/_demo.demo'
 
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
@@ -30,6 +32,10 @@ const ApprovalsRoute = ApprovalsRouteImport.update({
   path: '/approvals',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DemoRoute = DemoRouteImport.update({
+  id: '/_demo',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -40,12 +46,18 @@ const PortfolioAccountIdRoute = PortfolioAccountIdRouteImport.update({
   path: '/$accountId',
   getParentRoute: () => PortfolioRoute,
 } as any)
+const DemoDemoRoute = DemoDemoRouteImport.update({
+  id: '/demo',
+  path: '/demo',
+  getParentRoute: () => DemoRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/approvals': typeof ApprovalsRoute
   '/portfolio': typeof PortfolioRouteWithChildren
   '/settings': typeof SettingsRoute
+  '/demo': typeof DemoDemoRoute
   '/portfolio/$accountId': typeof PortfolioAccountIdRoute
 }
 export interface FileRoutesByTo {
@@ -53,33 +65,50 @@ export interface FileRoutesByTo {
   '/approvals': typeof ApprovalsRoute
   '/portfolio': typeof PortfolioRouteWithChildren
   '/settings': typeof SettingsRoute
+  '/demo': typeof DemoDemoRoute
   '/portfolio/$accountId': typeof PortfolioAccountIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_demo': typeof DemoRouteWithChildren
   '/approvals': typeof ApprovalsRoute
   '/portfolio': typeof PortfolioRouteWithChildren
   '/settings': typeof SettingsRoute
+  '/_demo/demo': typeof DemoDemoRoute
   '/portfolio/$accountId': typeof PortfolioAccountIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/approvals' | '/portfolio' | '/settings' | '/portfolio/$accountId'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/approvals' | '/portfolio' | '/settings' | '/portfolio/$accountId'
-  id:
-    | '__root__'
     | '/'
     | '/approvals'
     | '/portfolio'
     | '/settings'
+    | '/demo'
+    | '/portfolio/$accountId'
+  fileRoutesByTo: FileRoutesByTo
+  to:
+    | '/'
+    | '/approvals'
+    | '/portfolio'
+    | '/settings'
+    | '/demo'
+    | '/portfolio/$accountId'
+  id:
+    | '__root__'
+    | '/'
+    | '/_demo'
+    | '/approvals'
+    | '/portfolio'
+    | '/settings'
+    | '/_demo/demo'
     | '/portfolio/$accountId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DemoRoute: typeof DemoRouteWithChildren
   ApprovalsRoute: typeof ApprovalsRoute
   PortfolioRoute: typeof PortfolioRouteWithChildren
   SettingsRoute: typeof SettingsRoute
@@ -108,6 +137,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApprovalsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_demo': {
+      id: '/_demo'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof DemoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -122,8 +158,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortfolioAccountIdRouteImport
       parentRoute: typeof PortfolioRoute
     }
+    '/_demo/demo': {
+      id: '/_demo/demo'
+      path: '/demo'
+      fullPath: '/demo'
+      preLoaderRoute: typeof DemoDemoRouteImport
+      parentRoute: typeof DemoRoute
+    }
   }
 }
+
+interface DemoRouteChildren {
+  DemoDemoRoute: typeof DemoDemoRoute
+}
+
+const DemoRouteChildren: DemoRouteChildren = {
+  DemoDemoRoute: DemoDemoRoute,
+}
+
+const DemoRouteWithChildren = DemoRoute._addFileChildren(DemoRouteChildren)
 
 interface PortfolioRouteChildren {
   PortfolioAccountIdRoute: typeof PortfolioAccountIdRoute
@@ -139,6 +192,7 @@ const PortfolioRouteWithChildren = PortfolioRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DemoRoute: DemoRouteWithChildren,
   ApprovalsRoute: ApprovalsRoute,
   PortfolioRoute: PortfolioRouteWithChildren,
   SettingsRoute: SettingsRoute,

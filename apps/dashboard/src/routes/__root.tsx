@@ -40,6 +40,17 @@ function HeaderContent() {
 }
 
 function RootLayout() {
+  const { location } = useRouterState()
+  const isDemo = location.pathname.startsWith('/demo')
+
+  if (isDemo) {
+    return (
+      <TooltipProvider>
+        <Outlet />
+      </TooltipProvider>
+    )
+  }
+
   return (
     <FilterProvider>
       <RoleProvider>
