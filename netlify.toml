@@ -1,0 +1,9 @@
+[build]
+  base    = "apps/dashboard"
+  command = "pnpm install && pnpm build"
+  publish = "apps/dashboard/dist"
+
+[[redirects]]
+  from   = "/*"
+  to     = "/index.html"
+  status = 200
